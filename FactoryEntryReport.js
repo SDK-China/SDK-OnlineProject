@@ -850,7 +850,7 @@ const LOC_CONFIGS = {
                 // "SzEzOTMxMihBKQ==", //陈毅鸿
                 "NDMxMjIyMTk5NzEyMDUzMzEz", //向林  
                 // "NTIyNzMxMjAwMDAxMTAzNjEx", //王煊廷
-                "MTMwMzIxMjAwMjA0MTY2MjE4", //邵相辉 
+                // "MTMwMzIxMjAwMjA0MTY2MjE4", //邵相辉 
                 "NDUwMjIxMTk4OTA0MDUyNDNY", //曾静 
                 // "NDIxMTgxMTk5MDAxMTc2MzFY", //余新旺 
                 // "NDQwOTgyMTk5NzEwMDgyNTk3", //周勇驰 
@@ -1877,7 +1877,7 @@ router.get('/debug', (req, res) => {
     const btns = Array.from(container.querySelectorAll('.batch-send-btn, .send-btn'));
     if(btns.length === 0) return alert('当前面板下没有找到可发送的数据包');
     
-    const pwd = prompt("⚠️ 批量发送确认\\n即将为您自动发送这 " + btns.length + " 个数据包。\\n为了防止触发风控，每个请求之间会强制间隔 0.6 秒。\\n\\n请输入操作密码：");
+    const pwd = prompt("⚠️ 批量发送确认\\n即将为您自动发送这 " + btns.length + " 个数据包。\\n为了防止触发风控，每个请求之间会强制间隔 1.8 秒。\\n\\n请输入操作密码：");
     if(!pwd) return;
     
     mainBtn.innerText = "🚀 队列自动发送中...";
@@ -1917,7 +1917,7 @@ router.get('/debug', (req, res) => {
             b.style.background = "linear-gradient(135deg, #ef4444, #dc2626)";
         }
         
-        await new Promise(r => setTimeout(r, 600)); 
+        await new Promise(r => setTimeout(r, 5000)); 
     }
     
     mainBtn.innerText = "✅ 批量发送完成";
@@ -2113,7 +2113,7 @@ router.get('/auto-renew', async (req, res) => {
                         }
                     }
                 }));
-                await delay(50);
+                await delay(5000);
             }
 
             await Promise.all(submitPromises);
