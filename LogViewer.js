@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { Redis } = require('@upstash/redis');
 
-// 1. 恢复你最初的本地环境变量读取方式（双重保险，本地绝对能读到）
-require('dotenv').config({ path: '.env.development.local' });
-require('dotenv').config({ path: '.env.local' });
+// 1. 集中加载环境变量（绝对路径，见 lib/env.js）
+require('./lib/env');
 
 // 2. 智能读取变量：无论你云端/本地用的是老名字还是新名字，统统兼容！
 const dbUrl = process.env.NewYzk_KV_REST_API_URL;

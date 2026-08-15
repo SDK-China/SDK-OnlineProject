@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env.local' });       //数据库
+require('./lib/env');                                    //数据库 (集中加载 .env，见 lib/env.js)
 const express = require('express'); // 关键修正：必须引入 express
 const cors = require('cors');
 const bodyParser = require('body-parser');

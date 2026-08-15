@@ -3,7 +3,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const { Redis } = require('@upstash/redis');
 
-require('dotenv').config({ path: '.env.development.local' }); 
+require('./lib/env'); // 集中加载环境变量（绝对路径）
 
 router.use(bodyParser.json());
 
