@@ -5,11 +5,15 @@
             "src": "index.js",
             "use": "@vercel/node",
             "config": {
-                "includeFiles": ["lib/**", "src/**/view/**"],
-                "maxDuration": 300
+                "includeFiles": ["lib/**", "src/**/view/**"]
             }
         }
     ],
+    "functions": {
+        "index.js": {
+            "maxDuration": 300
+        }
+    },
     "routes": [
         {
             "src": "/(.*)",
