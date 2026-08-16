@@ -1,6 +1,6 @@
 // 访客通：视图 (卡片 HTML 生成 + 网页主页面)
-const CONFIGS = require('../config/visitor');
-const { getBeijingTimeStr, getFormattedDate } = require('../service/visitor');
+const CONFIGS = require('../config/VisitorApprovalQuery');
+const { getBeijingTimeStr, getFormattedDate } = require('../service/VisitorApprovalQuery');
 
 const generateCardHtml = (person) => {
     const searchKey = `${person.name} ${person.idTail}`.toUpperCase();

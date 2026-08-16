@@ -1,5 +1,5 @@
 // 视图渲染 (Debug 前端页面 + 请求包 HTML 渲染)
-const { LOC_CONFIGS } = require('../config/factory');
+const { LOC_CONFIGS } = require('../config/FactoryEntryReport');
 
 // --- SPA 极速单页面 Debug 界面 (前端秒开骨架屏版) ---
 function renderDebugPage() {

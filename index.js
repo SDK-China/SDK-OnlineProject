@@ -4,13 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// --- 引入各功能模块 ---
-const logViewerRouter = require('./LogViewer');           // 引入日志查看器路由
-const crushToolRouter = require('./CrushTool');             // 原有新功能
-const weChatAutoReqRouter = require('./WeChatAutoReq');     // 微信自动请求
-const factoryEntryReportRouter = require('./FactoryEntryReport'); // 入厂报备(访客状态)
-const visitorApprovalQueryRouter = require('./visitorApprovalQuery'); // 引入查询功能路由
-const yunZhongKeRouter = require('./YunZhongKe');           // 云中客转链 (从index拆分)
+// --- 各功能模块已迁移至 src/ 下，按大类挂载 ---
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -19,30 +13,19 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// --- 路由注册 ---
+// --- 路由注册 (按大类挂载) ---
 
-// 1. 云中客功能 (挂载在根路径，保持原有 /convert 接口地址不变)
-// 访问地址: /convert
-app.use('/convert', yunZhongKeRouter);
+// 🟢 访客入厂大类
+app.use('/FactoryEntry/Report', require('./src/FactoryEntry/routes/FactoryEntryReport'));   // 入厂报备申请
+app.use('/FactoryEntry/Query', require('./src/FactoryEntry/routes/VisitorApprovalQuery'));   // 访客查询
+app.use('/FactoryEntry/Construction', require('./src/FactoryEntry/routes/WeChatAutoReq'));   // 施工报备文字
+app.use('/FactoryEntry/Log', require('./src/FactoryEntry/routes/LogViewer'));                // 访客入厂日志
 
-// 2. CrushTool 功能
-// 访问地址: /CrushTool/...
-app.use('/CrushTool', crushToolRouter);
+// 转链大类
+app.use('/YunZhongKe', require('./src/YunZhongKe/routes/YunZhongKe'));   // 云中客转链
 
-// 3. 微信自动请求功能
-// 访问地址: /WeChatAutoReq/...
-app.use('/WeChatAutoReq', weChatAutoReqRouter);
-
-// 4. 入厂报备功能 (包含 visitor-status 和 test-cron)
-// 访问地址: /FactoryEntryReport/...
-app.use('/FactoryEntryReport', factoryEntryReportRouter);
-
-// 5. 日志控制台
-// 访问地址: /LogViewer
-app.use('/LogViewer', logViewerRouter);
-
-// 引入访客查询功能路由
-app.use('/visitorApprovalQuery', visitorApprovalQueryRouter);
+// 配置工具大类
+app.use('/CrushTool', require('./src/CrushTool/routes/CrushTool'));      // 配置开关
 
 // --- 根路由测试 (可选) ---
 app.get('/', (req, res) => {

@@ -1,32 +1,9 @@
-const express = require('express');
+// 云中客转链业务逻辑（组包 + 请求上游，不碰 req/res）
 const axios = require('axios');
 const FormData = require('form-data');
-const router = express.Router();
+const { mm_values } = require('../config/YunZhongKe');
 
-// 原始数据配置
-const mm_values = [
-    "mm_6251734910_3088250085_115721950295",
-    "mm_6251734910_3088250085_115724250112",
-    "mm_6251734910_3088250085_115718550467",
-    "mm_6251734910_3088250085_115724250112",
-    "mm_6251734910_3088250085_115720650395",
-    "mm_6251734910_3088250085_115719100432",
-    "mm_6251734910_3088250085_115723300209",
-    "mm_6251734910_3088250085_115719900422",
-    "mm_6251734910_3088250085_115718300483",
-    "mm_6251734910_3088250085_115719150443",
-    "mm_6251734910_3088250085_115722650244"
-];
-
-// 路由：云中客转链功能
-router.post('/', async (req, res) => {
-    // 接口入参保持完全不变，不影响前端
-    const { temp_url, apitoken } = req.body;
-
-    if (!temp_url || !apitoken) {
-        return res.status(400).json({ message: 'temp_url and apitoken are required' });
-    }
-
+const convertLink = async ({ temp_url, apitoken }) => {
     const random_mm_value = mm_values[Math.floor(Math.random() * mm_values.length)];
 
     const formData = new FormData();
@@ -68,16 +45,14 @@ router.post('/', async (req, res) => {
         const response = await axios.post('https://cms.iyunzk.com/ku_api/tool/tklAnalysis', formData, { headers, timeout: 10000 });
 
         if (response.status === 200 && response.data && response.data.data) {
-            const tk_short_url = response.data.data.tk_short_url;
-            res.json({ tk_short_url });
-        } else {
-            // 返回具体的错误细节方便调试
-            res.status(500).json({ message: 'Error: Invalid response from server', details: response.data });
+            return { success: true, tk_short_url: response.data.data.tk_short_url };
         }
+        // 返回具体的错误细节方便调试
+        return { success: false, message: 'Error: Invalid response from server', details: response.data };
     } catch (error) {
         console.error('请求错误:', error.message);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return { success: false, message: 'Internal Server Error' };
     }
-});
+};
 
-module.exports = router;
+module.exports = { convertLink };

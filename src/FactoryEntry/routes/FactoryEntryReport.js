@@ -2,12 +2,12 @@
 const express = require('express');
 const { Redis } = require('@upstash/redis');
 // 集中加载环境变量（绝对路径，见 lib/env.js）
-require('../../lib/env');
+require('../../../lib/env');
 
-const { LOC_CONFIGS } = require('../config/factory');
-const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan } = require('../service/factory');
-const { decode, delay, getFormattedDate } = require('../../lib/utils');
-const { renderDebugPage, renderRequests } = require('../view/factory');
+const { LOC_CONFIGS } = require('../config/FactoryEntryReport');
+const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan } = require('../service/FactoryEntryReport');
+const { decode, delay, getFormattedDate } = require('../../../lib/utils');
+const { renderDebugPage, renderRequests } = require('../view/FactoryEntryReport');
 
 const router = express.Router();
 

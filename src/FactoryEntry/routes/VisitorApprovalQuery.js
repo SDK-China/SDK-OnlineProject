@@ -1,8 +1,8 @@
 // 访客通：路由接口
 const express = require('express');
-const CONFIGS = require('../config/visitor');
-const { getBeijingDayId, getBeijingTimeStr, getFormattedDate, getHeaders, fetchPersonData } = require('../service/visitor');
-const { generateCardHtml, renderVisitorStatusPage } = require('../view/visitor');
+const CONFIGS = require('../config/VisitorApprovalQuery');
+const { getBeijingDayId, getBeijingTimeStr, getFormattedDate, getHeaders, fetchPersonData } = require('../service/VisitorApprovalQuery');
+const { generateCardHtml, renderVisitorStatusPage } = require('../view/VisitorApprovalQuery');
 
 const router = express.Router();
 

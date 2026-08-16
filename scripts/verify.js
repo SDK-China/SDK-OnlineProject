@@ -37,11 +37,11 @@ const exposedPath = path.join(root, '_verify_orig.exposed.js');
 fs.writeFileSync(exposedPath, origSrc);
 
 const orig = require(exposedPath);
-const configFactory = require('../src/config/factory');
+const configFactory = require('../src/FactoryEntry/config/FactoryEntryReport');
 const newPersons = configFactory.PERSON_DB;
 const newTemplates = configFactory;
 const newLOC = configFactory.LOC_CONFIGS;
-const newServices = require('../src/service/factory');
+const newServices = require('../src/FactoryEntry/service/FactoryEntryReport');
 
 let pass = 0, fail = 0;
 function check(name, a, b) {

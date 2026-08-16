@@ -1,7 +1,7 @@
 // 入厂报备：全部配置与数据 (人员名单 PERSON_DB / 组包模板 / Q01 解析 / 厂区配置 LOC_CONFIGS)
 const fs = require('fs');
 const path = require('path');
-const { decode, getFormattedDate } = require('../../lib/utils');
+const { decode, getFormattedDate } = require('../../../lib/utils');
 
 const PERSON_DB = {
     // 康
@@ -337,7 +337,7 @@ let Q01_TEMPLATE_JSON = null; // 核心：整个 JSON 树直接深拷贝
 let Q01_URL_PARAMS = null;    // 核心：保存所有的外层发包参数
 
 try {
-    const binPath = path.join(__dirname, '..', '..', 'QA01_request_body.bin');
+    const binPath = path.join(__dirname, '..', '..', '..', 'QA01_request_body.bin');
     if (fs.existsSync(binPath)) {
         const rawContent = fs.readFileSync(binPath, 'utf-8');
         Q01_URL_PARAMS = new URLSearchParams(rawContent);
