@@ -1,22 +1,15 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "{lib,src/**/view}/**",
-      "maxDuration": 300
-    }
-  },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
+      "source": "/(.*)",
+      "destination": "/api/index.js"
     }
   ],
-  "crons": [
-    {
-      "path": "/FactoryEntry/Report/auto-renew",
-      "schedule": "0 22 * * *"
+  "functions": {
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ]
+  }
 }
