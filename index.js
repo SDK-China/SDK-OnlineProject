@@ -55,7 +55,7 @@ app.get('/', (req, res) => {
 // [新增] 处理首页图片的静态路由
 app.get('/sy.jpg', (req, res) => {
     // 准确读取您项目根目录下的 sy.jpg 文件
-    res.sendFile(path.join(__dirname, 'src/sy.jpg'));
+    res.sendFile(path.join(__dirname, 'sy.jpg'));
 });
 
 // --- 静态文件处理 ---
