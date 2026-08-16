@@ -1,6 +1,12 @@
 {
   "version": 2,
   "framework": null,
+  "crons": [
+    {
+      "path": "/FactoryEntry/Report/auto-renew.js",
+      "schedule": "0 22 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
