@@ -13,6 +13,12 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// --- 前端静态文件托管 (view 目录下的 html/css/js) ---
+app.use('/FactoryEntry/Report', express.static(path.join(__dirname, 'src/FactoryEntry/view/report')));
+app.use('/FactoryEntry/Query', express.static(path.join(__dirname, 'src/FactoryEntry/view/query')));
+app.use('/FactoryEntry/Log', express.static(path.join(__dirname, 'src/FactoryEntry/view/log')));
+app.use('/FactoryEntry/assets', express.static(path.join(__dirname, 'src/FactoryEntry/view')));
+
 // --- 路由注册 (按大类挂载) ---
 
 // 🟢 访客入厂大类

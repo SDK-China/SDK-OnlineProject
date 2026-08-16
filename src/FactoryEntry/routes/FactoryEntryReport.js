@@ -7,7 +7,6 @@ require('../../../lib/env');
 const { LOC_CONFIGS } = require('../config/FactoryEntryReport');
 const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan } = require('../service/FactoryEntryReport');
 const { decode, delay, getFormattedDate } = require('../../../lib/utils');
-const { renderDebugPage, renderRequests } = require('../view/FactoryEntryReport');
 
 const router = express.Router();
 
@@ -123,30 +122,14 @@ router.post('/generate-payload', express.json(), (req, res) => {
             currentTs += 86400000; // 递增一天
         }
 
-        // 3. 构建包含“一键发送”按钮的 UI 头部并渲染
-        let finalHtml = '';
-        if (requests.length > 0) {
-            finalHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background: linear-gradient(to right, #eff6ff, #e0e7ff); padding:12px 18px; border-radius:10px; border:1px solid #bfdbfe; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <div style="color:#1e40af; font-size: 0.95rem;">
-                    <strong style="font-size: 1.1rem;">✨ 报文就绪</strong><br>
-                    共生成 <b>${requests.length}</b> 个数据包，点击右侧即可自动化批量提交
-                </div>
-                <button onclick="sendAllBatch(this, '${loc}')" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(37,99,235,0.25); transition: all 0.2s ease;">
-                    🚀 一键发送全部
-                </button>
-            </div>
-            `;
-        }
-        finalHtml += renderRequests(requests, loc);
-
         // [新增] 异步上传生成的包数据到数据库
         if (requests.length > 0) {
             // 我们不 await 它，让它在后台静默上传，不阻塞前端页面响应
             saveLogToRedis('UI生成', loc, `Debug界面生成了 ${requests.length} 个数据包`, requests).catch(e => console.error(e));
         }
 
-        res.json({ html: finalHtml });
+        // 纯前后端分离：只返回请求包数据（JSON），前端自行渲染
+        res.json({ requests });
 
     } catch (e) {
         res.json({ error: "生成失败: " + e.message });
@@ -200,175 +183,77 @@ router.get('/debug-content', async (req, res) => {
         });
         const simulatedPlan = calculatePlan(simulatedStatusMap, locConfig);
 
-        const safetyBadge = safetyCheck.safe
-            ? `<span style="background:#ecfdf5; color:#059669; padding:4px 8px; border-radius:4px; border:1px solid #a7f3d0; font-size:0.8rem;">✅ 安全 (Ready)</span>`
-            : `<span style="background:#fef2f2; color:#dc2626; padding:4px 8px; border-radius:4px; border:1px solid #fecaca; font-size:0.8rem;">❌ 熔断 (BLOCKED)</span>`;
-
-        let realQueueHTML = '';
-        if (safetyCheck.safe) {
-            realQueueHTML = `
-                <h3 style="font-size:0.9rem; margin-bottom:10px; color:#374151;">🚀 待发送队列 (${realPlan.requests.length})</h3>
-                ${renderRequests(realPlan.requests, loc)}
-            `;
-        } else {
-            realQueueHTML = `
-                <div class="blocked-overlay">
-                    <div style="font-size:1.5rem; margin-bottom:10px;">⛔</div>
-                    <div style="font-weight:bold; font-size:1.1rem; margin-bottom:5px;">队列已被安全拦截</div>
-                    <div style="font-size:0.85rem; opacity:0.8;">${safetyCheck.reason}<br>本次执行<b>绝对不会</b>发送任何请求。</div>
-                </div>
-            `;
-        }
-
-        // 返回核心的 HTML 碎片给前端
-        const html = `
-            <h1><span>🔧 [${locConfig.title}] 自动续期调试</span> ${safetyBadge}</h1>
-
-            ${!safetyCheck.safe ? `<div class="error-banner">⛔ 熔断警告: ${safetyCheck.reason}</div>` : ''}
-
-            <div class="card">
-                <h2><span>📊 实时状态 (推演至: ${realPlan.targetDate})</span></h2>
-                <div class="stat-grid">
-                    <div class="stat-item"><div class="stat-val">${stats.total}</div>总查询人数</div>
-                    <div class="stat-item"><div class="stat-val" style="color:#059669">${stats.success}</div>接口成功</div>
-                    <div class="stat-item"><div class="stat-val" style="color:#dc2626">${stats.error}</div>接口报错</div>
-                    <div class="stat-item"><div class="stat-val">${stats.noData}</div>查询无记录</div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>姓名/轨迹</th><th>有效期止</th><th>状态</th></tr>
-                        </thead>
-                        <tbody>
-                            ${realPlan.summary.map(item => `
-                            <tr>
-                                <td><strong>${item.name}</strong><br><span style="font-size:0.7rem;color:#999">${item.idMask}</span></td>
-                                <td>${item.lastDate}</td>
-                                <td>
-                                    <span class="status-badge ${item.class}">${item.status}</span>
-                                    ${item.customHtml ? item.customHtml : ''}
-                                </td>
-                            </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                ${realQueueHTML}
-            </div>
-
-            <div class="card" style="border-top: 4px solid #10b981;">
-                <h2>🛠️ 自定义报文生成器</h2>
-                <div style="margin-bottom: 10px; font-size: 0.85rem; color: #4b5563;">
-                    自由选择人员和日期，生成特定组合的提交报文用于测试或手动发送。
-                </div>
-                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;">
-                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <strong>📅 起止日期:</strong> 
-                        <input type="date" id="customStartDate-${loc}" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1; min-width:120px;">
-                        <span style="color:#64748b; font-weight:bold;">至</span>
-                        <input type="date" id="customEndDate-${loc}" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1; min-width:120px;">
-                    </div>
-                    <div>
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-                            <strong>👥 选择人员:</strong>
-                            <button type="button" onclick="selectAllPersons('${loc}')" style="padding:2px 10px; background:#f3f4f6; border:1px solid #d1d5db; border-radius:5px; cursor:pointer; font-size:0.8rem; color:#374151;">全选</button>
-                            <button type="button" onclick="invertPersons('${loc}')" style="padding:2px 10px; background:#f3f4f6; border:1px solid #d1d5db; border-radius:5px; cursor:pointer; font-size:0.8rem; color:#374151;">反选</button>
-                        </div>
-                        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; background:#f9fafb; padding:10px; border-radius:6px; border:1px solid #e5e7eb;">
-                            ${Object.keys(locConfig.personDb).map(base64Id => {
+        // 人员列表（供前端渲染自定义报文生成器的 checkbox）
+        const personList = Object.keys(locConfig.personDb).map(base64Id => {
             const info = locConfig.personDb[base64Id];
             const nameField = info.find(f => f.label === '姓名');
             let name = nameField && nameField.fieldData ? nameField.fieldData.value : base64Id;
             const isActive = locConfig.query.visitorIdNos.includes(base64Id);
-
             const hasCustom = locConfig.customReceptionists && locConfig.customReceptionists[base64Id];
-            if (hasCustom) name += " ⭐";
+            return { base64Id, name, isActive, hasCustom };
+        });
 
-            return `<label style="font-size:0.85rem; display:flex; align-items:center; gap:4px; ${isActive ? '' : 'opacity:0.5;'}"><input type="checkbox" class="person-cb-${loc}" value="${base64Id}" ${isActive ? 'checked' : ''}>${name} ${isActive ? '' : '(停用)'}</label>`;
-        }).join('')}
-                        </div>
-                    </div>
-                    <button onclick="generateCustom('${loc}')" style="padding:8px 15px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; align-self:flex-start;">⚡ 立即生成报文</button>
-                </div>
-                <div id="customResult-${loc}" style="display:none;"></div>
-            </div>
+        // 纯前后端分离：返回结构化 JSON，前端自行渲染
+        res.json({
+            loc,
+            title: locConfig.title,
+            stats,
+            safetyCheck,
+            realPlan: { targetDate: realPlan.targetDate, summary: realPlan.summary, requests: realPlan.requests },
+            pendingPlan: { totalPendingCount: pendingPlan.totalPendingCount, requests: pendingPlan.requests },
+            simulatedPlan: { requests: simulatedPlan.requests },
+            personList
+        });
 
-            <div class="card" style="border-top: 4px solid #f59e0b; background: linear-gradient(to bottom, #ffffff, #fffbeb); margin-bottom: 20px;">
-                <h2>
-                    <span>⏳ [智能拼车] 「审核中」单据一键扫描与重推</span>
-                    <span style="background:#fef3c7; color:#d97706; padding:2px 8px; border-radius:99px; font-size:0.75rem; border:1px solid #fde047; font-weight:normal;">
-                        ⚡ 零耗时 / 内存无损解析
-                    </span>
-                </h2>
-                <div style="margin-bottom: 12px; font-size: 0.85rem; color: #4b5563; line-height: 1.5;">
-                    针对部分单据卡在 <code>flowStatus === '1' (审核中)</code> 状态未同步通过的问题，系统已在底层数据拉取时<b>零额外服务器开销</b>地过滤了所有待办人员，并严格按照<b>「到访时间 + 接待人规则」</b>压缩并整合为最少数量的数据包。
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; background: #fef3c7; padding:12px 16px; border-radius:8px; border:1px solid #fde047; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                    <div style="color:#92400e; font-size: 0.9rem;">
-                        🎯 内存扫描发现 <b>${pendingPlan.totalPendingCount}</b> 人次处于审核中，智能整合为 <b>${pendingPlan.requests.length}</b> 个最优数据包
-                    </div>
-                    <button onclick="togglePendingBox('${loc}')" id="btn-toggle-pending-${loc}" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(217,119,6,0.25); transition: all 0.2s;">
-                        ⚡ 一键生成并展开整合包 (${pendingPlan.requests.length})
-                    </button>
-                </div>
-
-                <div id="pending-box-${loc}" style="display: none; animation: fadeIn 0.3s ease;">
-                    ${pendingPlan.requests.length > 0 ? `
-                        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
-                            <button onclick="sendAllBatch(this, '${loc}')" class="batch-send-btn-pending" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(239,68,68,0.25);">
-                                🚀 一键重推全部审核中数据包 (${pendingPlan.requests.length})
-                            </button>
-                        </div>
-                        ${renderRequests(pendingPlan.requests, loc)}
-                    ` : `
-                        <div style="padding:25px; text-align:center; background:#fff; border:1px dashed #fcd34d; border-radius:8px; color:#b45309; font-size:0.9rem;">
-                            🎉 <b>太棒了！</b>当前该厂区所有有效名单中，没有任何滞留在「审核中」状态的单据！
-                        </div>
-                    `}
-                </div>
-            </div>
-
-            <div class="card" style="border-top: 4px solid #9333ea;">
-                <h2>🔮 全员无记录模拟 (Force Sync)</h2>
-                <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">假设数据库清空，系统将从“今天”开始生成完整对齐计划。（此区域仅为逻辑验证，不受熔断影响）</p>
-                ${renderRequests(simulatedPlan.requests, loc)}
-            </div>
-        `;
-        res.json({ html });
     } catch (e) {
         res.json({ error: e.message });
     }
 });
 
-// --- SPA 极速单页面 Debug 界面 (前端秒开骨架屏版) ---
-router.get('/debug', (req, res) => {
-    const html = renderDebugPage();
-    if (!html) return res.status(404).send("没有开启的厂区配置");
-    res.send(html);
+// 厂区列表配置（供前端静态页面渲染 tab）
+router.get('/config', (req, res) => {
+    const locs = Object.keys(LOC_CONFIGS).filter(k => LOC_CONFIGS[k].enabled).map(loc => ({
+        loc, title: LOC_CONFIGS[loc].title
+    }));
+    res.json(locs);
 });
 
-// --- 主逻辑路由 (一次遍历运行所有启用的厂区) ---
+// 网页入口：重定向到静态前端页面
+router.get('/debug', (req, res) => {
+    res.redirect('/FactoryEntry/Report/debug.html');
+});
+
+// --- 主逻辑路由 (SSE 流式 + dryRun 干跑，一次遍历所有启用厂区) ---
 router.get('/auto-renew', async (req, res) => {
-    // 👇 🌟 修改1：将全局零点移到最上面，作为赛车秒表的起点
+    const dryRun = req.query.dryRun === '1';
     const globalStartTime = Date.now();
-
     const logs = [];
+    const allResults = [];
 
-    // 👇 🌟 修改2：新增“时间轴助手”，让每句日志前面自动加上 [0.00s] 标记
+    // SSE 流式响应头
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no'
+    });
+
+    // 推送 SSE 事件
+    const push = (event, data) => {
+        res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    };
+
     const getTs = () => `[${((Date.now() - globalStartTime) / 1000).toFixed(2)}s]`;
     const log = (msg) => {
         const finalMsg = `${getTs()} ${msg}`;
         console.log(finalMsg);
         logs.push(finalMsg);
+        push('log', { message: finalMsg });
     };
-
-    const allResults = [];
 
     try {
         log("=== 🚀 开始自动续期流程 ===");
+        if (dryRun) log("⚠️ 【干跑模式】只模拟流程，绝不真实发包！");
 
         const locFilter = req.query.loc;
         const locsToRun = locFilter ? [locFilter] : Object.keys(LOC_CONFIGS);
@@ -378,25 +263,19 @@ router.get('/auto-renew', async (req, res) => {
             if (!locConfig || !locConfig.enabled) continue;
 
             log(`\n====== [${locConfig.title}] 开始执行 ======`);
-
-            // 👇 🌟 修改3：精确监控【查询阶段】的耗时
             log(`🔍 开始查询 [${loc}] 人员历史记录...`);
             const queryStartTime = Date.now();
-
             const { statusMap, stats } = await getAllStatuses(locConfig.query);
-
             const queryEndTime = Date.now();
             log(`🏁 查询完毕 [${loc}]，共耗时: ${((queryEndTime - queryStartTime) / 1000).toFixed(2)} 秒`);
 
             const safetyCheck = checkSafeToRun(stats);
-
             if (!safetyCheck.safe) {
                 log(`⛔ [严重] ${loc} 安全熔断触发，终止该厂区执行！原因: ${safetyCheck.reason}`);
                 continue;
             }
 
             const plan = calculatePlan(statusMap, locConfig);
-
             if (plan.requests.length === 0) {
                 log(`✨ ${loc} 所有人员状态正常(已对齐)，无需续期。`);
                 continue;
@@ -407,62 +286,55 @@ router.get('/auto-renew', async (req, res) => {
             const submitPromises = [];
             for (const reqTask of plan.requests) {
                 log(`🚀 开始发包 [${reqTask.people}] -> 日期: ${reqTask.targetDate}`);
+                const reqStartTime = Date.now();
 
-                // 👇 🌟 修改4：精确监控【每个单独发包】的耗时
-                const reqStartTime = Date.now(); // 记录这一个包的起跑时间
-
-                submitPromises.push(submitApplication(reqTask, locConfig).then(r => {
-                    // 记录这一个包的终点时间并计算差值
-                    const reqEndTime = Date.now();
-                    const reqCost = ((reqEndTime - reqStartTime) / 1000).toFixed(2);
-
-                    if (r) {
+                if (dryRun) {
+                    // 干跑：绝不调用 submitApplication，用模拟成功结果代替
+                    submitPromises.push((async () => {
+                        await delay(200);
+                        const r = { success: true, date: reqTask.targetDate, names: reqTask.people, id: '模拟实例(干跑)' };
                         r.loc = loc;
-                        r.payload = {
-                            rawJson: reqTask.rawJson,
-                            encodedBody: reqTask.encodedBody
-                        };
-
-                        // 把这个包的耗时存入结果，这样 Redis 里的 JSON 也能看到耗时
-                        r.costSeconds = reqCost;
-
+                        r.payload = { rawJson: reqTask.rawJson, encodedBody: reqTask.encodedBody };
+                        r.costSeconds = ((Date.now() - reqStartTime) / 1000).toFixed(2);
                         allResults.push(r);
-
-                        if (!r.success) {
-                            log(`❌ 发包失败 [${loc}] ${reqTask.targetDate} (此包耗时: ${reqCost}秒) -> 原因: ${r.msg}`);
-                        } else {
-                            log(`✅ 发包成功 [${loc}] ${reqTask.targetDate} (此包耗时: ${reqCost}秒) -> 实例ID: ${r.id}`);
+                        push('result', r);
+                        log(`✅ 发包成功(模拟) [${loc}] ${reqTask.targetDate} (耗时: ${r.costSeconds}秒)`);
+                    })());
+                } else {
+                    submitPromises.push(submitApplication(reqTask, locConfig).then(r => {
+                        const reqEndTime = Date.now();
+                        const reqCost = ((reqEndTime - reqStartTime) / 1000).toFixed(2);
+                        if (r) {
+                            r.loc = loc;
+                            r.payload = { rawJson: reqTask.rawJson, encodedBody: reqTask.encodedBody };
+                            r.costSeconds = reqCost;
+                            allResults.push(r);
+                            push('result', r);
+                            if (!r.success) log(`❌ 发包失败 [${loc}] ${reqTask.targetDate} (此包耗时: ${reqCost}秒) -> 原因: ${r.msg}`);
+                            else log(`✅ 发包成功 [${loc}] ${reqTask.targetDate} (此包耗时: ${reqCost}秒) -> 实例ID: ${r.id}`);
                         }
-                    }
-                }));
+                    }));
+                }
                 await delay(5000);
             }
-
             await Promise.all(submitPromises);
         }
 
         const globalEndTime = Date.now();
         const costSeconds = ((globalEndTime - globalStartTime) / 1000).toFixed(2);
-
         log(`\n=== 🏁 流程结束 (总耗时: ${costSeconds} 秒) ===`);
 
         let report = "📊 自动续期执行报告\n========================\n";
-        allResults.forEach((r, idx) => {
+        allResults.forEach((r) => {
             const icon = r.success ? "✅" : "❌";
             report += `${icon} [${r.loc}] 日期: ${r.date}\n`;
             report += `    人员: ${r.names}\n`;
             report += `    结果: ${r.success ? "成功 (" + r.id + ")" : "失败 (" + r.msg + ")"}\n`;
-            // 👇 🌟 修改5：在最终反馈报告中，追加显示每个包的耗时
             report += `    耗时: ${r.costSeconds} 秒\n`;
             report += "------------------------\n";
         });
-
-        if (allResults.length === 0) {
-            report += "✅ 所有厂区状态均正常，未发生实际提交操作。\n";
-        }
-
+        if (allResults.length === 0) report += "✅ 所有厂区状态均正常，未发生实际提交操作。\n";
         report += `⏱️ 总计用时: ${costSeconds} 秒\n========================\n`;
-
         report += "\n🔍 系统时间轴日志:\n" + logs.join('\n');
 
         await saveLogToRedis('自动续期', locFilter || 'ALL', '后台自动巡检与续期完成', {
@@ -470,11 +342,13 @@ router.get('/auto-renew', async (req, res) => {
             actionDetails: allResults
         }).catch(e => console.error("Redis上传遭遇拦截:", e));
 
-        res.type('text/plain').send(report);
+        push('done', { results: allResults, report });
+        res.end();
 
     } catch (err) {
         console.error(err);
-        res.status(500).send("Server Error: " + err.message);
+        push('error', { message: err.message });
+        res.end();
     }
 });
 

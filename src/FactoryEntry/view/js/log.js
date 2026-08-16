@@ -1,92 +1,3 @@
-// 日志控制台页面视图
-function renderLogViewerPage() {
-    const html = `
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>🚀 Factory Auto-Renew 日志控制台</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-        <style>
-            body { background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-            .log-card { transition: all 0.2s ease; }
-            .log-card:hover { border-color: #93c5fd; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1); }
-            .log-details { display: none; }
-            .log-details.open { display: block; animation: slideDown 0.3s ease-out; }
-            @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-            ::-webkit-scrollbar { width: 6px; height: 6px; }
-            ::-webkit-scrollbar-track { background: transparent; }
-            ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
-            ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-            .tab-btn.active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
-        </style>
-    </head>
-    <body class="p-4 md:p-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2"><span>📊</span> 智能运行日志中枢</h1>
-                    <p class="text-sm text-gray-500 mt-1">深度解析 UI生成、手动发送、自动续期的底层报文</p>
-                </div>
-                <div class="flex gap-3 mt-4 md:mt-0">
-                    <button onclick="fetchLogs()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition shadow-sm flex items-center gap-2">
-                        🔄 刷新数据
-                    </button>
-                    <button onclick="clearLogs()" class="bg-red-50 hover:bg-red-100 text-red-600 px-5 py-2 rounded-lg font-medium transition border border-red-200">
-                        🗑️ 清空日志
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-center">
-                <div class="flex items-center gap-2 pr-4 border-r border-gray-200">
-                    <input type="checkbox" id="selectAllCb" onclick="selectAllFiltered(event)" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
-                    <label for="selectAllCb" class="text-sm font-bold text-gray-700 cursor-pointer">全选当前</label>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <label class="text-sm font-bold text-gray-600">时间维度:</label>
-                    <select id="timeFilter" onchange="renderLogs()" class="border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">📅 全部展现</option>
-                        <option value="today">⚡ 仅看今日</option>
-                        <option value="history">🕰️ 历史 (1970年至今旧数据)</option>
-                    </select>
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="text-sm font-bold text-gray-600">操作类型:</label>
-                    <select id="actionFilter" onchange="renderLogs()" class="border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">全部类型</option>
-                        <option value="UI生成">UI生成</option>
-                        <option value="手动发送">手动发送</option>
-                        <option value="自动续期">自动续期</option>
-                    </select>
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="text-sm font-bold text-gray-600">搜索:</label>
-                    <input type="text" id="searchInput" onkeyup="renderLogs()" placeholder="输入关键字..." class="border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-gray-50 focus:outline-none w-48">
-                </div>
-                <div class="ml-auto text-sm text-gray-500 font-medium">
-                    共找到 <span id="logCount" class="text-blue-600 font-bold text-lg">0</span> 条记录
-                </div>
-            </div>
-
-            <div id="logContainer" class="flex flex-col gap-4 pb-20">
-                <div class="text-center text-gray-400 py-10">加载中...</div>
-            </div>
-
-            <div id="bulkActionBar" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 translate-y-24 opacity-0 bg-gray-900/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-4 transition-all duration-300 z-50 pointer-events-none">
-                <span class="text-sm font-medium">已选中 <span id="bulkCount" class="text-blue-400 font-bold text-lg mx-1">0</span>项</span>
-                <div class="w-px h-5 bg-gray-600"></div>
-                <button onclick="deleteSelected()" class="bg-red-500 hover:bg-red-400 text-white px-4 py-1.5 rounded-full text-sm font-bold transition shadow-[0_0_15px_rgba(239,68,68,0.4)] flex items-center gap-1">
-                    🗑️ 永久删除
-                </button>
-            </div>
-        </div>
-
-        <script>
             let allLogs = [];
             let selectedLogs = new Set(); // 🌟 [新增] 全局管理选中的键集合
 
@@ -133,7 +44,7 @@ function renderLogViewerPage() {
             // 🌟 [新增] 单个日志删除 API 调用
             async function deleteSingle(event, key) {
                 event.stopPropagation();
-                const pwd = prompt("⚠️ 即将永久删除此条记录，不可恢复！\\n\\n请输入确认密码：");
+                const pwd = prompt("⚠️ 即将永久删除此条记录，不可恢复！\n\n请输入确认密码：");
                 if (!pwd) return;
 
                 try {
@@ -154,7 +65,7 @@ function renderLogViewerPage() {
             // 🌟 [新增] 批量选中日志删除 API 调用
             async function deleteSelected() {
                 if (selectedLogs.size === 0) return;
-                const pwd = prompt(\`⚠️ 危险操作！即将会把您勾选的 \${selectedLogs.size} 条记录灰飞烟灭！\\n\\n请输入确认密码：\`);
+                const pwd = prompt(`⚠️ 危险操作！即将会把您勾选的 ${selectedLogs.size} 条记录灰飞烟灭！\n\n请输入确认密码：`);
                 if (!pwd) return;
 
                 try {
@@ -179,15 +90,15 @@ function renderLogViewerPage() {
             async function fetchLogs() {
                 const container = document.getElementById('logContainer');
                 
-                // 👇 注意：这里已经为您加上了反斜杠转义 \`，编辑器不会再报错了
-                container.innerHTML = \`
+                // 👇 注意：这里已经为您加上了反斜杠转义 `，编辑器不会再报错了
+                container.innerHTML = `
                 <div class="bg-white p-6 rounded-xl border border-blue-100 shadow-sm text-center">
                     <div class="text-blue-500 font-bold mb-3 text-lg" id="loadingTitle">⚖️ 正在探测数据库并智能称重分包...</div>
                     <div class="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
                         <div class="bg-blue-500 h-3 rounded-full transition-all duration-300" id="loadingBar" style="width: 0%"></div>
                     </div>
                     <div class="text-gray-400 text-sm font-mono" id="loadingSub">正在构建极速下载通道</div>
-                </div>\`;
+                </div>`;
                 
                 try {
                     // 1. 获取称重后的打包计划
@@ -207,8 +118,8 @@ function renderLogViewerPage() {
                     const barEl = document.getElementById('loadingBar');
                     const subEl = document.getElementById('loadingSub');
 
-                    // 👇 变量插值也加上了转义 \${}
-                    titleEl.innerText = \`📦 系统已将数据智能切分为 \${chunks.length} 个极限体积包，开始拉取...\`;
+                    // 👇 变量插值也加上了转义 ${}
+                    titleEl.innerText = `📦 系统已将数据智能切分为 ${chunks.length} 个极限体积包，开始拉取...`;
                     
                     allLogs = [];
                     
@@ -227,8 +138,8 @@ function renderLogViewerPage() {
                         // 只要有任何一辆"车"拉着数据回来了，就更新一次进度条
                         completedChunks++;
                         const percent = Math.round((completedChunks / chunks.length) * 100);
-                        barEl.style.width = \`\${percent}%\`;
-                        subEl.innerText = \`⚡ 并发极速拉取: 已就位 [\${completedChunks} / \${chunks.length}] - 进度 \${percent}%\`;
+                        barEl.style.width = `${percent}%`;
+                        subEl.innerText = `⚡ 并发极速拉取: 已就位 [${completedChunks} / ${chunks.length}] - 进度 ${percent}%`;
 
                         if (batchData.success) {
                             return batchData.data;
@@ -251,7 +162,7 @@ function renderLogViewerPage() {
                     setTimeout(() => { renderLogs(); }, 300);
 
                 } catch (e) {
-                    container.innerHTML = \`<div class="text-center text-red-500 py-10 bg-white rounded-xl border border-red-100">❌ 加载失败: \${e.message}</div>\`;
+                    container.innerHTML = `<div class="text-center text-red-500 py-10 bg-white rounded-xl border border-red-100">❌ 加载失败: ${e.message}</div>`;
                 }
             }
 
@@ -285,32 +196,32 @@ function renderLogViewerPage() {
                         let html = '<div class="space-y-4">';
                         data.forEach((req, i) => {
                             // 👇 注意这里的反引号和 $ 均已转义，修复了报错
-                            html += \`
+                            html += `
                             <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
                                 <div class="flex items-center gap-3 mb-2 pb-2 border-b border-gray-700">
-                                    <span class="bg-blue-900/50 text-blue-300 text-xs px-2 py-1 rounded font-bold">📦 数据包 \${i + 1}</span>
-                                    <span class="text-gray-200 text-sm font-medium">📅 \${req.targetDate || '未知'}</span>
+                                    <span class="bg-blue-900/50 text-blue-300 text-xs px-2 py-1 rounded font-bold">📦 数据包 ${i + 1}</span>
+                                    <span class="text-gray-200 text-sm font-medium">📅 ${req.targetDate || '未知'}</span>
                                 </div>
                                 <div class="text-sm mb-3 flex items-center flex-wrap">
-                                    <span class="mr-1 text-gray-400">👥</span> \${renderPeopleWithBadge(req.people)}
+                                    <span class="mr-1 text-gray-400">👥</span> ${renderPeopleWithBadge(req.people)}
                                 </div>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     <div class="bg-gray-900 rounded border border-gray-700">
                                         <div class="flex justify-between items-center bg-gray-800 px-3 py-1.5 rounded-t">
                                             <span class="text-xs text-orange-300 font-mono">Encoded Body (最终发包)</span>
-                                            <button onclick="copyRaw(event, '\${encodeURIComponent(req.encodedBody || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
+                                            <button onclick="copyRaw(event, '${encodeURIComponent(req.encodedBody || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
                                         </div>
-                                        <div class="p-3 text-xs text-gray-300 break-all h-32 overflow-y-auto">\${req.encodedBody || '无数据'}</div>
+                                        <div class="p-3 text-xs text-gray-300 break-all h-32 overflow-y-auto">${req.encodedBody || '无数据'}</div>
                                     </div>
                                     <div class="bg-gray-900 rounded border border-gray-700">
                                         <div class="flex justify-between items-center bg-gray-800 px-3 py-1.5 rounded-t">
                                             <span class="text-xs text-green-300 font-mono">Raw JSON (明文结构)</span>
-                                            <button onclick="copyRaw(event, '\${encodeURIComponent(req.rawJson || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
+                                            <button onclick="copyRaw(event, '${encodeURIComponent(req.rawJson || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
                                         </div>
-                                        <div class="p-3 text-xs text-gray-300 whitespace-pre overflow-x-auto h-32 overflow-y-auto">\${req.rawJson || '无数据'}</div>
+                                        <div class="p-3 text-xs text-gray-300 whitespace-pre overflow-x-auto h-32 overflow-y-auto">${req.rawJson || '无数据'}</div>
                                     </div>
                                 </div>
-                            </div>\`;
+                            </div>`;
                         });
                         return html + '</div>';
                     }
@@ -320,30 +231,30 @@ function renderLogViewerPage() {
                         const res = data.responseResult || {};
                         const isSuccess = res.success;
                         // 👇 已转义
-                        return \`
+                        return `
                         <div class="space-y-4">
                             <div class="flex flex-col md:flex-row gap-4">
                                 <div class="flex-1 bg-gray-800 rounded-lg p-4 border border-gray-700">
                                     <div class="text-gray-400 text-xs mb-2 uppercase tracking-wider">📤 提交请求</div>
-                                    <div class="text-gray-200 text-sm mb-2">📅 \${req.targetDate || '未知'}</div>
+                                    <div class="text-gray-200 text-sm mb-2">📅 ${req.targetDate || '未知'}</div>
                                     <div class="text-sm flex items-center flex-wrap">
-                                        <span class="mr-1 text-gray-400">👥</span> \${renderPeopleWithBadge(req.people)}
+                                        <span class="mr-1 text-gray-400">👥</span> ${renderPeopleWithBadge(req.people)}
                                     </div>
                                 </div>
-                                <div class="flex-1 \${isSuccess ? 'bg-green-900/20 border-green-800/50' : 'bg-red-900/20 border-red-800/50'} rounded-lg p-4 border">
-                                    <div class="\${isSuccess ? 'text-green-400' : 'text-red-400'} text-xs mb-2 uppercase tracking-wider">📥 接口响应</div>
-                                    <div class="text-gray-200 text-sm mb-1">\${isSuccess ? '✅ 请求成功' : '❌ 请求失败'}</div>
-                                    <div class="\${isSuccess ? 'text-green-300/80' : 'text-red-300/80'} text-xs font-mono">\${isSuccess ? '实例ID: ' + res.id : '原因: ' + (res.msg || '未知')}</div>
+                                <div class="flex-1 ${isSuccess ? 'bg-green-900/20 border-green-800/50' : 'bg-red-900/20 border-red-800/50'} rounded-lg p-4 border">
+                                    <div class="${isSuccess ? 'text-green-400' : 'text-red-400'} text-xs mb-2 uppercase tracking-wider">📥 接口响应</div>
+                                    <div class="text-gray-200 text-sm mb-1">${isSuccess ? '✅ 请求成功' : '❌ 请求失败'}</div>
+                                    <div class="${isSuccess ? 'text-green-300/80' : 'text-red-300/80'} text-xs font-mono">${isSuccess ? '实例ID: ' + res.id : '原因: ' + (res.msg || '未知')}</div>
                                 </div>
                             </div>
                             <div class="bg-gray-900 rounded border border-gray-700">
                                 <div class="flex justify-between items-center bg-gray-800 px-3 py-1.5 rounded-t">
                                     <span class="text-xs text-orange-300 font-mono">Encoded Body (当时发的包)</span>
-                                    <button onclick="copyRaw(event, '\${encodeURIComponent(req.encodedBody || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
+                                    <button onclick="copyRaw(event, '${encodeURIComponent(req.encodedBody || '')}')" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>
                                 </div>
-                                <div class="p-3 text-xs text-gray-300 break-all h-28 overflow-y-auto">\${req.encodedBody || '无数据'}</div>
+                                <div class="p-3 text-xs text-gray-300 break-all h-28 overflow-y-auto">${req.encodedBody || '无数据'}</div>
                             </div>
-                        </div>\`;
+                        </div>`;
                     }
 
                     if (log.action === '自动续期') {
@@ -378,7 +289,7 @@ function renderLogViewerPage() {
                                         '<div class="bg-gray-950 rounded border border-gray-700">' +
                                             '<div class="flex justify-between items-center bg-gray-800 px-3 py-1.5 rounded-t">' +
                                                 '<span class="text-xs text-orange-300 font-mono">Encoded Body (真正发出去的数据)</span>' +
-                                                '<button onclick="copyRaw(event, \\'' + encodeURIComponent(encoded) + '\\')" class="text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>' +
+                                                '<button onclick="copyRaw(event, \'' + encodeURIComponent(encoded) + '\')" class="text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>' +
                                             '</div>' +
                                             '<div class="p-3 text-[11px] text-gray-300 break-all h-32 overflow-y-auto font-mono">' + encoded + '</div>' +
                                         '</div>' +
@@ -386,7 +297,7 @@ function renderLogViewerPage() {
                                         '<div class="bg-gray-950 rounded border border-gray-700">' +
                                             '<div class="flex justify-between items-center bg-gray-800 px-3 py-1.5 rounded-t">' +
                                                 '<span class="text-xs text-green-300 font-mono">Raw JSON (原始明文结构)</span>' +
-                                                '<button onclick="copyRaw(event, \\'' + encodeURIComponent(rawJson) + '\\')" class="text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>' +
+                                                '<button onclick="copyRaw(event, \'' + encodeURIComponent(rawJson) + '\')" class="text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded transition">复制</button>' +
                                             '</div>' +
                                             '<div class="p-3 text-[11px] text-gray-300 whitespace-pre overflow-x-auto h-32 overflow-y-auto font-mono">' + rawJson + '</div>' +
                                         '</div>' +
@@ -399,21 +310,21 @@ function renderLogViewerPage() {
                         }
 
                         // 👇 已转义
-                        return \`
+                        return `
                         <div class="bg-gray-950 p-4 rounded-lg border border-gray-800 shadow-inner">
                             <div class="text-gray-500 text-xs mb-2 font-mono flex justify-between items-center">
                                 <span>[Cron Job Console Output]</span>
-                                <button onclick="copyRaw(event, '\${encodeURIComponent(report)}')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded transition">复制文本</button>
+                                <button onclick="copyRaw(event, '${encodeURIComponent(report)}')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded transition">复制文本</button>
                             </div>
-                            <div class="text-sm text-emerald-400 whitespace-pre font-mono overflow-x-auto leading-relaxed">\${report}</div>
-                            \${detailsHtml}
-                        </div>\`;
+                            <div class="text-sm text-emerald-400 whitespace-pre font-mono overflow-x-auto leading-relaxed">${report}</div>
+                            ${detailsHtml}
+                        </div>`;
                     }
 
-                    return \`<pre><code class="language-json text-sm rounded-lg border border-gray-700">\${JSON.stringify(data, null, 2)}</code></pre>\`;
+                    return `<pre><code class="language-json text-sm rounded-lg border border-gray-700">${JSON.stringify(data, null, 2)}</code></pre>`;
 
                 } catch (e) {
-                    return \`<pre><code class="language-json text-sm rounded-lg border border-gray-700">\${JSON.stringify(data, null, 2)}</code></pre>\`;
+                    return `<pre><code class="language-json text-sm rounded-lg border border-gray-700">${JSON.stringify(data, null, 2)}</code></pre>`;
                 }
             }
 
@@ -446,50 +357,50 @@ function renderLogViewerPage() {
                     if(log.action === "UI生成") badgeColor = "bg-blue-100 text-blue-700 border border-blue-200";
                     if(log.action === "手动发送") badgeColor = "bg-emerald-100 text-emerald-700 border border-emerald-200";
 
-                    return \`
+                    return `
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative group">
-                        <div class="p-3 md:p-4 flex items-start justify-between log-card cursor-pointer bg-white hover:bg-blue-50/30 transition-colors" onclick="toggleDetails(\${i})">
+                        <div class="p-3 md:p-4 flex items-start justify-between log-card cursor-pointer bg-white hover:bg-blue-50/30 transition-colors" onclick="toggleDetails(${i})">
                             
                             <div class="flex items-start gap-3 w-full pr-8">
                                 
                                 <div class="flex-shrink-0 flex items-center mt-[3px] md:mt-1" onclick="event.stopPropagation()">
-                                    <input type="checkbox" class="log-checkbox w-4 h-4 text-blue-600 rounded border-gray-300 shadow-sm focus:ring-blue-500 cursor-pointer" value="\${log.key}" \${selectedLogs.has(log.key) ? 'checked' : ''} onclick="toggleLogSelect(event, '\${log.key}')">
+                                    <input type="checkbox" class="log-checkbox w-4 h-4 text-blue-600 rounded border-gray-300 shadow-sm focus:ring-blue-500 cursor-pointer" value="${log.key}" ${selectedLogs.has(log.key) ? 'checked' : ''} onclick="toggleLogSelect(event, '${log.key}')">
                                 </div>
                                 
                                 <div class="flex flex-col flex-1 gap-1.5 min-w-0">
                                     
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <div class="px-2 py-0.5 rounded text-[11px] md:text-xs font-bold \${badgeColor}">\${log.action}</div>
-                                        <div class="font-bold text-gray-800 text-sm tracking-wide">🏢 \${log.location}</div>
-                                        <div class="font-mono text-[11px] md:text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">🕒 \${log.time.replace('_', ' ')}</div>
+                                        <div class="px-2 py-0.5 rounded text-[11px] md:text-xs font-bold ${badgeColor}">${log.action}</div>
+                                        <div class="font-bold text-gray-800 text-sm tracking-wide">🏢 ${log.location}</div>
+                                        <div class="font-mono text-[11px] md:text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">🕒 ${log.time.replace('_', ' ')}</div>
                                     </div>
                                     
                                     <div class="text-gray-600 text-sm md:text-[14.5px] font-medium leading-relaxed line-clamp-2 md:line-clamp-1 break-words">
-                                        \${log.summary}
+                                        ${log.summary}
                                     </div>
                                     
                                 </div>
                             </div>
                             
-                            <button onclick="deleteSingle(event, '\${log.key}')" class="absolute right-3 top-3 md:right-4 md:top-4 text-gray-400 md:text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition md:opacity-0 group-hover:opacity-100" title="删除此记录">
+                            <button onclick="deleteSingle(event, '${log.key}')" class="absolute right-3 top-3 md:right-4 md:top-4 text-gray-400 md:text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition md:opacity-0 group-hover:opacity-100" title="删除此记录">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </div>
                         
-                        <div id="details-\${i}" class="log-details bg-gray-900 border-t border-gray-200">
+                        <div id="details-${i}" class="log-details bg-gray-900 border-t border-gray-200">
                             <div class="flex border-b border-gray-700 bg-gray-800/50 px-4 pt-2 gap-4">
-                                <button class="tab-btn active pb-2 text-sm text-gray-400 hover:text-gray-200" onclick="switchView(event, \${i}, 'pretty')">✨ 智能排版视图</button>
-                                <button class="tab-btn pb-2 text-sm text-gray-400 hover:text-gray-200" onclick="switchView(event, \${i}, 'raw')">⚙️ 原始 JSON 树</button>
+                                <button class="tab-btn active pb-2 text-sm text-gray-400 hover:text-gray-200" onclick="switchView(event, ${i}, 'pretty')">✨ 智能排版视图</button>
+                                <button class="tab-btn pb-2 text-sm text-gray-400 hover:text-gray-200" onclick="switchView(event, ${i}, 'raw')">⚙️ 原始 JSON 树</button>
                             </div>
                             <div class="p-4">
-                                <div id="view-pretty-\${i}" class="block">\${formatPayload(log)}</div>
-                                <div id="view-raw-\${i}" class="hidden relative">
-                                    <button onclick="copyRaw(event, '\${encodeURIComponent(JSON.stringify(log.data, null, 2))}')" class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-xs">复制整树</button>
-                                    <pre><code class="language-json text-sm rounded-lg border border-gray-700">\${JSON.stringify(log.data, null, 2)}</code></pre>
+                                <div id="view-pretty-${i}" class="block">${formatPayload(log)}</div>
+                                <div id="view-raw-${i}" class="hidden relative">
+                                    <button onclick="copyRaw(event, '${encodeURIComponent(JSON.stringify(log.data, null, 2))}')" class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded text-xs">复制整树</button>
+                                    <pre><code class="language-json text-sm rounded-lg border border-gray-700">${JSON.stringify(log.data, null, 2)}</code></pre>
                                 </div>
                             </div>
                         </div>
-                    </div>\`;
+                    </div>`;
                 }).join('');
             }
 
@@ -543,7 +454,7 @@ function renderLogViewerPage() {
             }
 
             async function clearLogs() {
-                const pwd = prompt("⚠️ 危险操作！\\n即将删除数据库中所有的日志记录，此操作不可逆！\\n\\n请输入确认密码：");
+                const pwd = prompt("⚠️ 危险操作！\n即将删除数据库中所有的日志记录，此操作不可逆！\n\n请输入确认密码：");
                 if (!pwd) return;
                 try {
                     const res = await fetch('/FactoryEntry/Log/api/clear', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pwd }) });
@@ -554,11 +465,3 @@ function renderLogViewerPage() {
             }
 
             fetchLogs();
-        </script>
-    </body>
-    </html>
-    `;
-    return html;
-}
-
-module.exports = { renderLogViewerPage };

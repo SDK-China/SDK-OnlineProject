@@ -1,36 +1,34 @@
-// 访客通：路由接口
+// 访客通：路由接口（纯前后端分离：后端只出 JSON，前端自行渲染）
 const express = require('express');
 const CONFIGS = require('../config/VisitorApprovalQuery');
 const { getBeijingDayId, getBeijingTimeStr, getFormattedDate, getHeaders, fetchPersonData } = require('../service/VisitorApprovalQuery');
-const { generateCardHtml, renderVisitorStatusPage } = require('../view/VisitorApprovalQuery');
 
 const router = express.Router();
 
-// --- 5. 路由接口 ---
+// 厂区配置接口：供前端静态页面获取 A08/Q01 的 title + 人员列表
+router.get('/visitor-config', (req, res) => {
+    const configs = {
+        'A08': { title: CONFIGS['A08'].title, ids: CONFIGS['A08'].visitorIdNos },
+        'Q01': { title: CONFIGS['Q01'].title, ids: CONFIGS['Q01'].visitorIdNos }
+    };
+    res.json(configs);
+});
 
-// 卡片数据 API
+// 卡片数据 API：返回纯 JSON（人员完整数据），前端自行拼卡片 HTML
 router.get('/visitor-card-data', async (req, res) => {
     try {
         const encodedId = req.query.id;
         const loc = req.query.loc || 'A08';
         const config = CONFIGS[loc] || CONFIGS['A08'];
 
-        if (!encodedId) return res.json({ html: '', hasActive: false });
+        if (!encodedId) return res.json({ success: false, person: null });
         const id = Buffer.from(encodedId, 'base64').toString('utf-8');
         const headers = getHeaders();
         const todayDayId = getBeijingDayId(new Date().getTime());
         const person = await fetchPersonData(id, headers, todayDayId, config.regPerson, config.acToken);
-        const html = generateCardHtml(person);
-        res.json({
-            html,
-            hasActive: person.globalStatus.hasActive,
-            hasPending: person.globalStatus.hasPending,
-            hasFuture: person.globalStatus.hasFuture,
-            success: person.success // 👈 新增：把成功与否的标记传给前端
-        });
+        res.json({ success: person.success, person });
     } catch (e) {
-        // 👈 新增：哪怕代码崩溃了，也要告诉前端 success 是 false
-        res.json({ html: '<div class="app-card error">数据获取异常</div>', hasActive: false, success: false }); 
+        res.json({ success: false, person: null, error: e.message });
     }
 });
 
@@ -72,9 +70,9 @@ router.get('/visitor-status-Wechat', async (req, res) => {
     } catch (e) { res.status(500).send('Error'); }
 });
 
-// 网页主入口 (SPA 丝滑切换改版)
+// 网页入口：重定向到静态前端页面
 router.get('/visitor-status', (req, res) => {
-    res.send(renderVisitorStatusPage());
+    res.redirect('/FactoryEntry/Query/visitor.html');
 });
 
 module.exports = router;

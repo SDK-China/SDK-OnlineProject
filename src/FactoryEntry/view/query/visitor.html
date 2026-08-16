@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>访客通 Pro</title>
+    <link rel="stylesheet" href="/FactoryEntry/assets/css/visitor.css">
+</head>
+<body>
+    <nav class="topnav">
+        <a href="/FactoryEntry/Report/debug.html">🔧 报备调试</a>
+        <a href="/FactoryEntry/Report/auto.html">🚀 自动续期</a>
+        <a href="/FactoryEntry/Query/visitor.html" class="active">👥 访客通</a>
+        <a href="/FactoryEntry/Log/log.html">📊 日志</a>
+    </nav>
+
+
+<div class="navbar">
+    <div class="nav-content">
+        <div class="nav-title">
+            <div class="live-dot"></div> <span id="mainTitle"></span>
+        </div>
+        <div class="btn-refresh" id="refreshBtn" onclick="manualRefresh()">🔄</div>
+    </div>
+    <div class="search-wrap">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索姓名或身份证后4位..." onkeyup="filterList()">
+    </div>
+
+    <div class="tabs">
+        <div id="tab-A08" class="tab active" onclick="switchTab('A08')">🏢 A08 厂区</div>
+        <div id="tab-Q01" class="tab" onclick="switchTab('Q01')">🏢 Q01 厂区</div>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+</div>
+
+<div class="container" id="cardList">
+    </div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<div class="modal-mask" id="modalMask" onclick="closeRawModal()"></div>
+<div class="modal-panel" id="modalPanel">
+    <div class="modal-header">
+        <span id="modalTitle">源数据</span>
+        <div>
+            <button class="btn-copy" onclick="copyData()">复制数据</button>
+            <button class="btn-close" onclick="closeRawModal()">关闭</button>
+        </div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+</div>
+
+<script src="/FactoryEntry/assets/js/visitor.js"></script>
+</body>
+</html>

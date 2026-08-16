@@ -123,11 +123,9 @@ router.post('/api/delete', express.json(), async (req, res) => {
 });
 
 
-const { renderLogViewerPage } = require('../view/LogViewer');
-
-// 日志控制台页面
+// 日志控制台页面：重定向到静态前端
 router.get('/', (req, res) => {
-    res.send(renderLogViewerPage());
+    res.redirect('/FactoryEntry/Log/log.html');
 });
 
 module.exports = router;
