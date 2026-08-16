@@ -3,7 +3,7 @@
   "framework": null,
   "crons": [
     {
-      "path": "/FactoryEntry/Query/visitor-status-Wechat",
+      "path": "/FactoryEntry/Report/auto-renew.js",
       "schedule": "0 22 * * *"
     }
   ],
@@ -16,7 +16,7 @@
   "functions": {
     "api/index.js": {
       "includeFiles": "src/**,lib/**,sy.jpg,favicon.ico,robots.txt,b472ebb099a88a2c31edc854441f6dce.txt,data.json",
-      "maxDuration": 60
+      "maxDuration": 300
     }
   }
 }
