@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>访客通 Pro</title>
+    <link rel="stylesheet" href="/lib/css/bootstrap.min.css">
     <link rel="stylesheet" href="/FactoryEntry/assets/css/visitor.css">
 </head>
 <body>
-    <nav class="topnav">
-        <a href="/FactoryEntry/Report/debug.html">🔧 报备调试</a>
-        <a href="/FactoryEntry/Report/auto.html">🚀 自动续期</a>
-        <a href="/FactoryEntry/Query/visitor.html" class="active">👥 访客通</a>
-        <a href="/FactoryEntry/Log/log.html">📊 日志</a>
+
+    <nav class="navbar navbar-expand navbar-light bg-white shadow-sm mb-4">
+        <div class="container justify-content-center">
+            <ul class="nav nav-pills gap-1">
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Report/debug.html">🔧 报备调试</a></li>
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Report/auto.html">🚀 自动续期</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/FactoryEntry/Query/visitor.html">👥 访客通</a></li>
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Log/log.html">📊 日志</a></li>
+            </ul>
+        </div>
     </nav>
 
-
-<div class="navbar">
+<div class="navbar2">
     <div class="nav-content">
         <div class="nav-title">
             <div class="live-dot"></div> <span id="mainTitle"></span>
@@ -23,7 +28,7 @@
         <div class="btn-refresh" id="refreshBtn" onclick="manualRefresh()">🔄</div>
     </div>
     <div class="search-wrap">
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索姓名或身份证后4位..." onkeyup="filterList()">
+        <input type="text" class="form-control" id="searchInput" placeholder="🔍 搜索姓名或身份证后4位..." onkeyup="filterList()">
     </div>
 
     <div class="tabs">
@@ -36,23 +41,24 @@
     </div>
 </div>
 
-<div class="container" id="cardList">
+<div class="card-list" id="cardList">
     </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
 <div class="modal-mask" id="modalMask" onclick="closeRawModal()"></div>
 <div class="modal-panel" id="modalPanel">
-    <div class="modal-header">
+    <div class="modal-header2">
         <span id="modalTitle">源数据</span>
         <div>
             <button class="btn-copy" onclick="copyData()">复制数据</button>
-            <button class="btn-close" onclick="closeRawModal()">关闭</button>
+            <button class="btn-close2" onclick="closeRawModal()">关闭</button>
         </div>
     </div>
-    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-body2" id="modalBody"></div>
 </div>
 
+<script src="/lib/js/bootstrap.bundle.min.js"></script>
 <script src="/FactoryEntry/assets/js/visitor.js"></script>
 </body>
 </html>

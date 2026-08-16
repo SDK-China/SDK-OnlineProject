@@ -83,15 +83,15 @@ function generateCardHtml(person) {
     }
 
     return `<div class="app-card fade-in" data-key="${searchKey}">
-        <div class="card-header">
+        <div class="vcard-header">
             <div class="header-user">
                 <div class="avatar">${person.name[0] || '?'}</div>
                 <div class="user-meta"><div class="name">${person.name}</div><div class="id-no">ID: ${person.idTail}</div></div>
             </div>
             ${statusBadge}
         </div>
-        <div class="card-body">${bodyHtml}</div>
-        <div class="card-footer">
+        <div class="vcard-body">${bodyHtml}</div>
+        <div class="vcard-footer">
             <div class="footer-meta"><span class="icon-timer">⚡</span> ${person.cost}ms<span class="sep">|</span>${updateTimeStr}</div>
             <div class="footer-btn" onclick="openRawModal('${person.name}', '${rawJsonStr}')">JSON <span class="arrow-right">→</span></div>
         </div>

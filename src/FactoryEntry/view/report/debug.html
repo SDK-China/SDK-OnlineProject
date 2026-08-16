@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>申请插件调试面板</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>入厂报备调试</title>
+    <link rel="stylesheet" href="/lib/css/bootstrap.min.css">
     <link rel="stylesheet" href="/FactoryEntry/assets/css/debug.css">
 </head>
-<body>
-    <nav class="topnav">
-        <a href="/FactoryEntry/Report/debug.html" class="active">🔧 报备调试</a>
-        <a href="/FactoryEntry/Report/auto.html">🚀 自动续期</a>
-        <a href="/FactoryEntry/Query/visitor.html">👥 访客通</a>
-        <a href="/FactoryEntry/Log/log.html">📊 日志</a>
+<body class="bg-light">
+        <nav class="navbar navbar-expand navbar-light bg-white shadow-sm mb-4">
+        <div class="container justify-content-center">
+            <ul class="nav nav-pills gap-1">
+                <li class="nav-item"><a class="nav-link active" href="/FactoryEntry/Report/debug.html">🔧 报备调试</a></li>
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Report/auto.html">🚀 自动续期</a></li>
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Query/visitor.html">👥 访客通</a></li>
+                <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Log/log.html">📊 日志</a></li>
+            </ul>
+        </div>
     </nav>
-
     <div class="container">
         <div class="tabs" id="tabs"></div>
         <div id="contents"></div>
     </div>
+    <script src="/lib/js/bootstrap.bundle.min.js"></script>
     <script src="/FactoryEntry/assets/js/debug.js"></script>
 </body>
 </html>

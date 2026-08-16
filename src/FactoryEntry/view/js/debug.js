@@ -67,7 +67,7 @@ function renderDebugContent(data) {
 
         ${!safetyCheck.safe ? `<div class="error-banner">⛔ 熔断警告: ${safetyCheck.reason}</div>` : ''}
 
-        <div class="card">
+        <div class="panel">
             <h2><span>📊 实时状态 (推演至: ${realPlan.targetDate})</span></h2>
             <div class="stat-grid">
                 <div class="stat-item"><div class="stat-val">${stats.total}</div>总查询人数</div>
@@ -90,7 +90,7 @@ function renderDebugContent(data) {
             ${realQueueHTML}
         </div>
 
-        <div class="card" style="border-top: 4px solid #10b981;">
+        <div class="panel" style="border-top: 4px solid #10b981;">
             <h2>🛠️ 自定义报文生成器</h2>
             <div style="margin-bottom: 10px; font-size: 0.85rem; color: #4b5563;">自由选择人员和日期，生成特定组合的提交报文用于测试或手动发送。</div>
             <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;">
@@ -113,7 +113,7 @@ function renderDebugContent(data) {
             <div id="customResult-${loc}" style="display:none;"></div>
         </div>
 
-        <div class="card" style="border-top: 4px solid #f59e0b; background: linear-gradient(to bottom, #ffffff, #fffbeb); margin-bottom: 20px;">
+        <div class="panel" style="border-top: 4px solid #f59e0b; background: linear-gradient(to bottom, #ffffff, #fffbeb); margin-bottom: 20px;">
             <h2><span>⏳ [智能拼车] 「审核中」单据一键扫描与重推</span><span style="background:#fef3c7; color:#d97706; padding:2px 8px; border-radius:99px; font-size:0.75rem; border:1px solid #fde047; font-weight:normal;">⚡ 零耗时 / 内存无损解析</span></h2>
             <div style="margin-bottom: 12px; font-size: 0.85rem; color: #4b5563; line-height: 1.5;">针对部分单据卡在 <code>flowStatus === '1' (审核中)</code> 状态未同步通过的问题，系统已在底层数据拉取时<b>零额外服务器开销</b>地过滤了所有待办人员，并严格按照<b>「到访时间 + 接待人规则」</b>压缩并整合为最少数量的数据包。</div>
             <div style="display:flex; justify-content:space-between; align-items:center; background: #fef3c7; padding:12px 16px; border-radius:8px; border:1px solid #fde047; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
@@ -125,7 +125,7 @@ function renderDebugContent(data) {
             </div>
         </div>
 
-        <div class="card" style="border-top: 4px solid #9333ea;">
+        <div class="panel" style="border-top: 4px solid #9333ea;">
             <h2>🔮 全员无记录模拟 (Force Sync)</h2>
             <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">假设数据库清空，系统将从“今天”开始生成完整对齐计划。（此区域仅为逻辑验证，不受熔断影响）</p>
             ${renderRequests(simulatedPlan.requests, loc)}

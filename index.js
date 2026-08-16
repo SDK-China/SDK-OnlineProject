@@ -14,6 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- 前端静态文件托管 (view 目录下的 html/css/js) ---
+app.use('/lib', express.static(path.join(__dirname, 'lib')));
 app.use('/FactoryEntry/Report', express.static(path.join(__dirname, 'src/FactoryEntry/view/report')));
 app.use('/FactoryEntry/Query', express.static(path.join(__dirname, 'src/FactoryEntry/view/query')));
 app.use('/FactoryEntry/Log', express.static(path.join(__dirname, 'src/FactoryEntry/view/log')));

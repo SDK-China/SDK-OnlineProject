@@ -5,7 +5,7 @@
             "src": "index.js",
             "use": "@vercel/node",
             "config": {
-                "includeFiles": "src/**/view/**",
+                "includeFiles": ["lib/**", "src/**/view/**"],
                 "maxDuration": 300
             }
         }
