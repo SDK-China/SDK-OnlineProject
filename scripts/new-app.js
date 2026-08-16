@@ -51,7 +51,7 @@ write('service', name + '.js', `// ${name} 业务逻辑：放查数据、计算�
 
 // view 仅在有页面的业务生成（html/css/js 静态前端）
 if (!isApi) {
-    write('view', name + '.html', `<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>${name}</title>\n    <link rel="stylesheet" href="/${name}/ui/css/${name}.css">\n</head>\n<body>\n    <h1>${name}</h1>\n    <script src="/${name}/ui/js/${name}.js"></script>\n</body>\n</html>\n`);
+    write('view', name + '.html', `<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>${name}</title>\n    <link rel="stylesheet" href="/lib/css/bootstrap.min.css">\n    <link rel="stylesheet" href="/${name}/ui/css/${name}.css">\n</head>\n<body class="bg-light">\n    <div class="container mt-4">\n        <h1 class="h4">${name}</h1>\n    </div>\n    <script src="/lib/js/bootstrap.bundle.min.js"></script>\n    <script src="/${name}/ui/js/${name}.js"></script>\n</body>\n</html>\n`);
     write(path.join('view', 'css'), name + '.css', `/* ${name} 样式 */\nbody { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; }\n`);
     write(path.join('view', 'js'), name + '.js', `// ${name} 前端逻辑（fetch JSON 自行渲染）\nconst API_BASE = '/${name}';\n\nwindow.onload = async () => {\n    // 在这里 fetch 后端接口并渲染\n};\n`);
 }
