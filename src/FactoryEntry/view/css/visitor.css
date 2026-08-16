@@ -158,10 +158,11 @@
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
             z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; 
         }
-        .vtoast { 
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); color: white; 
+        .vtoast {
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); color: white;
             padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            align-self: center; width: fit-content;
             opacity: 0; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .vtoast.show { opacity: 1; transform: translateY(0); }
