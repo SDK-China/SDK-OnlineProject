@@ -271,7 +271,7 @@ function filterList() {
 function showToast(msg) {
     const wrap = document.getElementById('toastWrap');
     const div = document.createElement('div');
-    div.className = 'toast';
+    div.className = 'vtoast';
     div.innerText = msg;
     wrap.appendChild(div);
     requestAnimationFrame(() => {

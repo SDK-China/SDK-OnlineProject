@@ -158,13 +158,13 @@
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
             z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; 
         }
-        .toast { 
+        .vtoast { 
             background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); color: white; 
             padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); 
             opacity: 0; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .toast.show { opacity: 1; transform: translateY(0); }
+        .vtoast.show { opacity: 1; transform: translateY(0); }
 
         /* Modal */
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 200; display: none; opacity: 0; transition: opacity 0.2s;}
