@@ -15,7 +15,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "src/**,lib/**,sy.jpg,favicon.ico,robots.txt,b472ebb099a88a2c31edc854441f6dce.txt,data.json",
+      "includeFiles": "{src/**,lib/**,sy.jpg,favicon.ico,robots.txt,b472ebb099a88a2c31edc854441f6dce.txt,data.json}",
       "maxDuration": 60
     }
   }
