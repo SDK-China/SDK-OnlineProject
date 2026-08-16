@@ -4,7 +4,7 @@
     "functions": {
         "index.js": {
             "includeFiles": "{lib,src/**/view}/**",
-            "maxDuration": 300
+            "maxDuration": 60
         }
     },
     "routes": [
