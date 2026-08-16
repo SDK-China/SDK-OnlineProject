@@ -3,7 +3,7 @@
     "version": 2,
     "functions": {
         "index.js": {
-            "includeFiles": ["lib/**", "src/**/view/**"],
+            "includeFiles": "{lib,src/**/view}/**",
             "maxDuration": 300
         }
     },
