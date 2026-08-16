@@ -48,8 +48,9 @@ async function deleteSingle(event, key) {
         const json = await res.json();
         if (json.success) {
             selectedLogs.delete(key);
+            allLogs = allLogs.filter(log => log.key !== key);
             updateBulkActionBar();
-            fetchLogs();
+            renderLogs();
         } else { alert(json.msg); }
     } catch (e) { alert('网络异常'); }
 }
@@ -67,10 +68,12 @@ async function deleteSelected() {
         const json = await res.json();
         alert(json.msg);
         if (json.success) {
+            const deletedKeys = Array.from(selectedLogs);
+            allLogs = allLogs.filter(log => !deletedKeys.includes(log.key));
             selectedLogs.clear();
             document.getElementById('selectAllCb').checked = false;
             updateBulkActionBar();
-            fetchLogs();
+            renderLogs();
         }
     } catch (e) { alert('网络异常'); }
 }
