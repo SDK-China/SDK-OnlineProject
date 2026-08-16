@@ -3,7 +3,7 @@
   "framework": null,
   "crons": [
     {
-      "path": "/FactoryEntry/Report/auto-renew.js",
+      "path": "/FactoryEntry/Report/auto-renew",
       "schedule": "0 22 * * *"
     }
   ],
