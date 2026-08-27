@@ -71,7 +71,21 @@ router.post('/generate-payload', express.json(), (req, res) => {
             const nameField = personInfo.find(f => f.label === '姓名');
             const name = nameField && nameField.fieldData ? nameField.fieldData.value : idBase64;
 
-            const customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+            // 👇 路由层智能拼合：确保“生成报文”界面能正确显示接待人姓名
+            let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+            if (customConf) {
+                const recId = customConf.receptionistId;
+                const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
+                customConf = {
+                    ...customConf,
+                    receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
+                    receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
+                    receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
+                    visitReason: recInfo.visitReason || customConf.visitReason,
+                    keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
+                };
+            }
+
             const trackNormal = !customConf || customConf.keepNormal;
             const trackCustom = !!customConf;
 

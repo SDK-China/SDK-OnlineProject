@@ -23,7 +23,10 @@ const CONFIGS = {
                 // "MzMwNzI3MTk4MjEwMjkxNjQ1",  // 朱华芳
                 // "MjEwMTEyMTk4MzA3MDQwMjMx",   // 贺建菲
                 // "MzMwNjAyMTk5ODEwMjkyNTEy"   // 👇 🌟 2026-06-01 新增：樊莹烽
-                "NDIxMjIyMTk5MDAzMTQwMTEz"  // 👇 🌟 2026-07-13 新增：王報平
+                "NDIxMjIyMTk5MDAzMTQwMTEz",  // 👇 🌟 2026-07-13 新增：王報平
+                "NDExMzI0MjAwMzEyMjUyNDFY", //韩于克
+                "MjMxMTgxMTk5NTA0MjAxNTE4", //张春岩
+                "MjMxMTgxMTk5NjA5MTgxODMy", //常健
         ],
         regPerson: "17614625112",
         acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F"

@@ -444,334 +444,169 @@ const LOC_CONFIGS = {
         },
         personDb: PERSON_DB,
 
-        // 【新增功能】：支持在这里配置专属的接待人信息
+        // 🌟 1. 接待人信息库与统一规则（“剩几天开几天”统一在此配置）
+        receptionists: {
+            // 李泊绪
+            "61908845": {
+                receptionistName: "李泊绪",
+                receptionDepartment: "QA01測試組",
+                receptionistPhone: "15133557787",
+                visitReason: "设备维护与保养",
+                renewThreshold: 2, // 🎯 整个李泊绪组统一：剩 <= 2 天触发
+                renewDays: 7       // 🎯 整个李泊绪组统一：一次续 7 天
+            },
+            // 张凯
+            "A2451885": {
+                receptionistName: "张凯",
+                receptionDepartment: "QA01工程技術五課",
+                receptionistPhone: "15032303506",
+                visitReason: "设备维护与保养",
+                renewThreshold: 2,
+                renewDays: 7
+            },
+            // 龚旭明
+            "A2449801": {
+                receptionistName: "龚旭明",
+                receptionDepartment: "QA01設備五課",
+                receptionistPhone: "17703340319",
+                visitReason: "设备维护与保养",
+                renewThreshold: 2,
+                renewDays: 7
+            },
+            // 赵海富
+            "A2319601": {
+                receptionistName: "赵海富",
+                receptionDepartment: "QA01設備五課",
+                receptionistPhone: "17643042011",
+                visitReason: "设备维护与保养",
+                renewThreshold: 2,
+                renewDays: 7
+            }
+        },
+
+        // 🌟 2. 人员专属绑定（每个人仅需指定跟谁，以及是否保留大部队双开）
         customReceptionists: {
             // 康伟强
             "MTMwMzIzMTk4NjAyMjgwODFY": {
-                // receptionistId: "A2449801",
-                // receptionistName: "龚旭明",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17703340319",
-
-                // receptionistId: "A2319601",
-                // receptionistName: "赵海富",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17643042011",
-
-                // receptionistId: "A2451885",
-                // receptionistName: "张凯",
-                // receptionDepartment: "QA01工程技術五課",
-                // receptionistPhone: "15032303506",
-
-                receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,             // 🌟 核心：设为 true，系统就会为他发一份指定的包，再跟大部队发一份原始包！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7                  // 独立：一次续2天
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true              // 🌟 核心：设为 true，发专属单的同时保留大部队原始包！
             },
             // 张强
             "MTMwMzIyMTk4ODA2MjQyMDE4": {
-                // receptionistId: "A2449801",
-                // receptionistName: "龚旭明",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17703340319",
-
-                // receptionistId: "A2319601",
-                // receptionistName: "赵海富",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17643042011",
-
-                // receptionistId: "A2451885",
-                // receptionistName: "张凯",
-                // receptionDepartment: "QA01工程技術五課",
-                // receptionistPhone: "15032303506",
-
-                receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7               // 独立：一次续2天
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
             },
-            //  姜建龙
+            // 姜建龙
             "MTMwNDI1MTk4OTA4MjkwMzE0": {
-                // receptionistId: "A2449801",
-                // receptionistName: "龚旭明",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17703340319",
-
-                // receptionistId: "A2319601",
-                // receptionistName: "赵海富",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17643042011",
-
-                // receptionistId: "A2451885",
-                // receptionistName: "张凯",
-                // receptionDepartment: "QA01工程技術五課",
-                // receptionistPhone: "15032303506",
-
-                receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7                  // 独立：一次续2天
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
             },
             // 王菁
             "MTMxMTIxMTk4OTAxMDU1MDEx": {
-            //     receptionistId: "A2449801",
-            //     receptionistName: "龚旭明",
-            //     receptionDepartment: "QA01設備五課",
-            //     receptionistPhone: "17703340319",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-            //     renewThreshold:0,            // 独立：剩0天时触发专属包
-            //     renewDays: 2                  // 独立：一次续2天
-
-            receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7,
+                // receptionistId: "A2449801", // 龚旭明
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
             },
-            //  孙德凯
+            // 孙德凯
             "MjMwMjMwMjAwMzAxMDEyMTM1": {
-                // receptionistId: "A2449801",
-                // receptionistName: "龚旭明",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17703340319",
-
-                // receptionistId: "A2319601",
-                // receptionistName: "赵海富",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17643042011",
-
-                // receptionistId: "A2451885",
-                // receptionistName: "张凯",
-                // receptionDepartment: "QA01工程技術五課",
-                // receptionistPhone: "15032303506",
-
-                receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7                  // 独立：一次续2天
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
             },
-            //  窦桂阳
+            // 窦桂阳
             // "NDIyMzI2MTk5NTA0Mjg2NDEx": {
-            // receptionistId: "A2449801",
-            // receptionistName: "龚旭明",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17703340319",
-
-            // receptionistId: "A2319601",
-            // receptionistName: "赵海富",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17643042011",
-
-            // receptionistId: "A2451885",
-            // receptionistName: "张凯",
-            // receptionDepartment: "QA01工程技術五課",
-            // receptionistPhone: "15032303506",
-
-            //     receptionistId: "61908845",
-            //     receptionistName: "李泊绪",
-            //     receptionDepartment: "QA01測試組",
-            //     receptionistPhone: "15133557787",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-            //     renewThreshold: 2,            // 独立：剩0天时触发专属包
-            //     renewDays: 7                  // 独立：一次续2天
+            //     // receptionistId: "A2449801", // 龚旭明
+            //     // receptionistId: "A2319601", // 赵海富
+            //     // receptionistId: "A2451885", // 张凯
+            //     receptionistId: "61908845",   // 李泊绪
+            //     keepNormal: true
             // },
             // 顾
             // "NDEyNzIzMTk4NTA5MjIwODNY": {
-            // receptionistId: "A2449801",
-            // receptionistName: "龚旭明",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17703340319",
-
-            // receptionistId: "A2319601",
-            // receptionistName: "赵海富",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17643042011",
-
-            // receptionistId: "A2451885",
-            // receptionistName: "张凯",
-            // receptionDepartment: "QA01工程技術五課",
-            // receptionistPhone: "15032303506",
-
-            // receptionistId: "61908845",
-            // receptionistName: "李泊绪",
-            // receptionDepartment: "QA01測試組",
-            // receptionistPhone: "15133557787",
-            // visitReason: "设备维护与保养",
-            // keepNormal: false,             // 🌟 核心：设为 true，系统就会为他发一份指定的包，再跟大部队发一份原始包！
-            // renewThreshold: 2,            // 独立：剩0天时触发专属包
-            // renewDays: 7                  // 独立：一次续2天
+            //     // receptionistId: "A2449801", // 龚旭明
+            //     // receptionistId: "A2319601", // 赵海富
+            //     // receptionistId: "A2451885", // 张凯
+            //     receptionistId: "61908845",   // 李泊绪
+            //     keepNormal: false
             // },
             // 周杰
             // "NTExNTI1MTk5MzA1MTAxNjE5": {
-            // receptionistId: "A2449801",
-            // receptionistName: "龚旭明",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17703340319",
-
-            // receptionistId: "A2319601",
-            // receptionistName: "赵海富",
-            // receptionDepartment: "QA01設備五課",
-            // receptionistPhone: "17643042011",
-
-            // receptionistId: "A2451885",
-            // receptionistName: "张凯",
-            // receptionDepartment: "QA01工程技術五課",
-            // receptionistPhone: "15032303506",
-
-            //     receptionistId: "61908845",
-            //     receptionistName: "李泊绪",
-            //     receptionDepartment: "QA01測試組",
-            //     receptionistPhone: "15133557787",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // 🌟 核心：设为 true，系统就会为他发一份指定的包，再跟大部队发一份原始包！
-            //     renewThreshold: 2,            // 独立：剩0天时触发专属包
-            //     renewDays: 7                  // 独立：一次续2天
+            //     // receptionistId: "A2449801", // 龚旭明
+            //     // receptionistId: "A2319601", // 赵海富
+            //     // receptionistId: "A2451885", // 张凯
+            //     receptionistId: "61908845",   // 李泊绪
+            //     keepNormal: false
             // },
             // =========================================================
             // 🌟 2026-05-29 新增：理德 4 人组专属独立轨迹配置 (不跟常规大部队拼车)
             // =========================================================
             // // 伊藤太一
             // "VE0xNjczNTg5": {
-            //     receptionistId: "A2451885",
-            //     receptionistName: "张凯",
-            //     receptionDepartment: "QA01工程技術五課",
-            //     receptionistPhone: "15032303506",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // ❌ 彻底关闭大部队双开通道，只认李工的专单！
-            //     renewThreshold: 2,             // 独立门禁剩余 2 天或以下触发续期
-            //     renewDays: 7                   // 触发时单次续 7 天
+            //     receptionistId: "A2451885", // 张凯
+            //     keepNormal: false           // ❌ 彻底关闭大部队双开通道
             // },
             // // 松岡 伸治
             // "VFMwNjkzODk0": {
-            //     receptionistId: "A2451885",
-            //     receptionistName: "张凯",
-            //     receptionDepartment: "QA01工程技術五課",
-            //     receptionistPhone: "15032303506",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // ❌ 彻底关闭大部队双开通道
-            //     renewThreshold: 2,
-            //     renewDays: 7
+            //     receptionistId: "A2451885", // 张凯
+            //     keepNormal: false
             // },
             // // 朱华芳
             // "MzMwNzI3MTk4MjEwMjkxNjQ1": {
-            //     receptionistId: "A2451885",
-            //     receptionistName: "张凯",
-            //     receptionDepartment: "QA01工程技術五課",
-            //     receptionistPhone: "15032303506",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // ❌ 彻底关闭大部队双开通道
-            //     renewThreshold: 2,
-            //     renewDays: 7
+            //     receptionistId: "A2451885", // 张凯
+            //     keepNormal: false
             // },
             // // 贺建菲
             // "MjEwMTEyMTk4MzA3MDQwMjMx": {
-            //     receptionistId: "A2451885",
-            //     receptionistName: "张凯",
-            //     receptionDepartment: "QA01工程技術五課",
-            //     receptionistPhone: "15032303506",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // ❌ 彻底关闭大部队双开通道
-            //     renewThreshold: 2,
-            //     renewDays: 7
+            //     receptionistId: "A2451885", // 张凯
+            //     keepNormal: false
             // },
             // // 樊莹烽
             // "MzMwNjAyMTk5ODEwMjkyNTEy": {
-            //     receptionistId: "A2451885",
-            //     receptionistName: "张凯",
-            //     receptionDepartment: "QA01工程技術五課",
-            //     receptionistPhone: "15032303506",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,             // ❌ 彻底关闭大部队双开通道，只认李工专单！
-            //     renewThreshold: 2,             
-            //     renewDays: 7                   
-            // }
-             //  王保平
-            // "NDIxMjIyMTk5MDAzMTQwMTEz": {
-            //     receptionistId: "61908845",
-            //     receptionistName: "李泊绪",
-            //     receptionDepartment: "QA01測試組",
-            //     receptionistPhone: "15133557787",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,           // 🌟 核心：设为 true，同样双开！
-            //     renewThreshold: 2,            // 独立：剩0天时触发专属包
-            //     renewDays: 7                  // 独立：一次续2天
+            //     receptionistId: "A2451885", // 张凯
+            //     keepNormal: false
             // },
-            //  张春岩
-            "MjMxMTgxMTk5NTA0MjAxNTE4": {
-                // receptionistId: "A2449801",
-                // receptionistName: "龚旭明",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17703340319",
-
-                // receptionistId: "A2319601",
-                // receptionistName: "赵海富",
-                // receptionDepartment: "QA01設備五課",
-                // receptionistPhone: "17643042011",
-
-                // receptionistId: "A2451885",
-                // receptionistName: "张凯",
-                // receptionDepartment: "QA01工程技術五課",
-                // receptionistPhone: "15032303506",
-
-                receptionistId: "61908845",
-                receptionistName: "李泊绪",
-                receptionDepartment: "QA01測試組",
-                receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
-                keepNormal: true,           // 🌟 核心：设为 true，同样双开！
-                renewThreshold: 2,            // 独立：剩0天时触发专属包
-                renewDays: 7                  // 独立：一次续2天
+            // 王保平
+            "NDIxMjIyMTk5MDAzMTQwMTEz": {
+                receptionistId: "61908845", // 李泊绪
+                keepNormal: false
             },
-
-            // //  常健
+            // 张春岩
+            "MjMxMTgxMTk5NTA0MjAxNTE4": {
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
+            }, 
+            // 常健
             // "MjMxMTgxMTk5NjA5MTgxODMy": {
-            //     // receptionistId: "A2449801",
-            //     // receptionistName: "龚旭明",
-            //     // receptionDepartment: "QA01設備五課",
-            //     // receptionistPhone: "17703340319",
-
-            //     // receptionistId: "A2319601",
-            //     // receptionistName: "赵海富",
-            //     // receptionDepartment: "QA01設備五課",
-            //     // receptionistPhone: "17643042011",
-
-            //     // receptionistId: "A2451885",
-            //     // receptionistName: "张凯",
-            //     // receptionDepartment: "QA01工程技術五課",
-            //     // receptionistPhone: "15032303506",
-
-            //     receptionistId: "61908845",
-            //     receptionistName: "李泊绪",
-            //     receptionDepartment: "QA01測試組",
-            //     receptionistPhone: "15133557787",
-            //     visitReason: "设备维护与保养",
-            //     keepNormal: false,           // 🌟 核心：设为 true，同样双开！
-            //     renewThreshold: 2,            // 独立：剩0天时触发专属包
-            //     renewDays: 7                  // 独立：一次续2天
+            //     // receptionistId: "A2449801", // 龚旭明
+            //     // receptionistId: "A2319601", // 赵海富
+            //     // receptionistId: "A2451885", // 张凯
+            //     receptionistId: "61908845",   // 李泊绪
+            //     keepNormal: false
             // },
+            // 韩于克
+            "NDExMzI0MjAwMzEyMjUyNDFY": {
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: true
+            },
+            
         },
-
         // A08 的独立老组包逻辑 (已加入指定接待人合并支持)
         buildPayload: (idsBase64, targetTs, locConfig, customConfig = null) => {
             const tableRows = idsBase64.map(id => locConfig.personDb[id]).filter(Boolean);

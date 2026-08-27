@@ -151,10 +151,23 @@ const calculatePlan = (idStatusMap, locConfig) => {
         const nameField = personInfo.find(f => f.label === '姓名');
         const name = nameField && nameField.fieldData ? nameField.fieldData.value : "未知";
 
-        const customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+        // 👇 核心修复：将“个人精简配置”与“全局接待人配置池”智能拼合，彻底消灭 undefined
+        let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+        if (customConf) {
+            const recId = customConf.receptionistId;
+            const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
+            customConf = {
+                ...customConf,
+                receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
+                receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
+                receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
+                visitReason: recInfo.visitReason || customConf.visitReason,
+                keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
+            };
+        }
+
         const trackNormal = !customConf || customConf.keepNormal; // 是否需要发普通单
         const trackCustom = !!customConf;                         // 是否需要发专属单
-
         const getMaxEnd = (filterFn) => {
             let max = 0;
             records.forEach(r => {
@@ -202,6 +215,46 @@ const calculatePlan = (idStatusMap, locConfig) => {
     }
     // 👆 新增结束 👆
 
+    // 👇 【专属接待人追赶机制核心算法（接待人维度统一规则）】 👇
+    const customGroupTargets = {};
+    const customGroupRules = {}; // 🌟 新增：保存每个接待人的统一规则
+    const customUsers = virtualUsers.filter(vu => vu.type === 'custom');
+    
+    // 1. 按接待人进行分组
+    const customGroups = {};
+    customUsers.forEach(vu => {
+        const recId = vu.customConf.receptionistId;
+        if (!customGroups[recId]) customGroups[recId] = [];
+        customGroups[recId].push(vu);
+    });
+
+    // 2. 遍历每个专属接待人分组，计算该组统一的规则与追赶目标
+    Object.entries(customGroups).forEach(([recId, group]) => {
+        let customMaxCurrent = Math.max(...group.map(vu => vu.maxEndTs));
+        if (!isFinite(customMaxCurrent) || customMaxCurrent < todayStartTs - 86400000) {
+            customMaxCurrent = todayStartTs - 86400000;
+        }
+
+        // 🌟 核心：以该接待人组内第一个配置了规则的人为准，提取为接待人的“全局统一规则”
+        const confWithRules = group.find(vu => vu.customConf && vu.customConf.renewThreshold !== undefined) || group[0];
+        const customThreshold = confWithRules.customConf.renewThreshold !== undefined ? confWithRules.customConf.renewThreshold : (locConfig.renewThreshold !== undefined ? locConfig.renewThreshold : 2);
+        const customAddDays = confWithRules.customConf.renewDays !== undefined ? confWithRules.customConf.renewDays : (locConfig.renewDays !== undefined ? locConfig.renewDays : 7);
+        
+        // 将接待人的规则锁死，存入字典
+        customGroupRules[recId] = { threshold: customThreshold, addDays: customAddDays };
+        
+        const customLeaderDiff = getBeijingDayId(customMaxCurrent) - todayId;
+
+        // 使用接待人的统一规则计算整个小组的追赶目标
+        let customTarget = customMaxCurrent;
+        if (customMaxCurrent === 0 || customLeaderDiff < 0 || customLeaderDiff <= customThreshold) {
+            customTarget = Math.max(customMaxCurrent, todayStartTs) + (customAddDays * 86400000);
+        }
+        
+        customGroupTargets[recId] = customTarget;
+    });
+    // 👆 专属接待人追赶机制结束 👆
+
     // 2. 第二遍循环：构建界面信息，并确定每个人的个人目标边界 targetEndTs
     virtualUsers.forEach(vu => {
         let currentEndTs = vu.maxEndTs;
@@ -213,13 +266,21 @@ const calculatePlan = (idStatusMap, locConfig) => {
         const lastDayId = getBeijingDayId(currentEndTs);
         const diff = lastDayId - todayId;
 
-        const threshold = vu.customConf && vu.customConf.renewThreshold !== undefined ? vu.customConf.renewThreshold : (locConfig.renewThreshold !== undefined ? locConfig.renewThreshold : 2);
-        const addDays = vu.customConf && vu.customConf.renewDays !== undefined ? vu.customConf.renewDays : (locConfig.renewDays !== undefined ? locConfig.renewDays : 7);
+        // 👇 核心改动：强行把“剩几天、开几天”绑定到接待人统一标尺！
+        let threshold, addDays;
+        if (vu.type === 'normal') {
+            threshold = locConfig.renewThreshold !== undefined ? locConfig.renewThreshold : 2;
+            addDays = locConfig.renewDays !== undefined ? locConfig.renewDays : 7;
+        } else {
+            const recId = vu.customConf.receptionistId;
+            // 无论被接待人自己怎么填，强制使用上面算好的“接待人组统一规则”
+            threshold = customGroupRules[recId].threshold;
+            addDays = customGroupRules[recId].addDays;
+        }
 
         let statusText = `正常 (剩 ${diff} 天)`;
         let statusClass = "success";
         let needRenew = false;
-
         if (vu.maxEndTs === 0) {
             statusText = "无记录 (需补齐)";
             statusClass = "expired";
@@ -241,7 +302,7 @@ const calculatePlan = (idStatusMap, locConfig) => {
         if (vu.type === 'custom') {
             customHtml = `<div style="margin-top: 6px; font-size: 0.75rem; line-height: 1.4;">
                 <span style="background: #f3e8ff; color: #6b21a8; padding: 2px 6px; border-radius: 4px; border: 1px solid #e9d5ff; display: inline-block;">
-                    🎯 专属接待: <b>${vu.customConf.receptionistName}</b>
+                    🎯 专属接待: <b>${vu.customConf.receptionistName || '未匹配到名字(请检查配置)'}</b>
                 </span><br>
                 <span style="color: #64748b; margin-top:2px; display:inline-block;">
                     ⚙️ 规则: ≤${threshold}天续${addDays}天 ${vu.customConf.keepNormal ? '<span style="color:#059669; font-weight:bold;">[➕双开原始包]</span>' : ''}
@@ -268,7 +329,10 @@ const calculatePlan = (idStatusMap, locConfig) => {
         if (vu.type === 'normal') {
             vu.targetEndTs = Math.max(currentEndTs, normalGroupTarget);
         } else {
-            vu.targetEndTs = needRenew ? baseLineTs + (addDays * 86400000) : currentEndTs;
+            // 从刚才算好的专属目标字典中，取出该接待人组的最高追赶目标，强制拉齐！
+            const recId = vu.customConf.receptionistId;
+            const customTarget = customGroupTargets[recId];
+            vu.targetEndTs = Math.max(currentEndTs, customTarget);
         }
     });
 
@@ -354,7 +418,21 @@ const calculatePendingPlan = (idStatusMap, locConfig) => {
 
         const nameField = personInfo.find(f => f.label === '姓名');
         const name = nameField && nameField.fieldData ? nameField.fieldData.value : "未知";
-        const customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+        
+        // 👇 同步修复：确保审核中的打包提示也能正确显示接待人姓名
+        let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+        if (customConf) {
+            const recId = customConf.receptionistId;
+            const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
+            customConf = {
+                ...customConf,
+                receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
+                receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
+                receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
+                visitReason: recInfo.visitReason || customConf.visitReason,
+                keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
+            };
+        }
 
         // 👇 🌟 屏障逻辑第一步：提前收集该人员所有“已通过”的单据
         const passedSet = new Set();
