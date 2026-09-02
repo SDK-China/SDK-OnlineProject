@@ -434,7 +434,7 @@ const LOC_CONFIGS = {
                 // "MjEwMTEyMTk4MzA3MDQwMjMx",   // 贺建菲
                 // "MzMwNjAyMTk5ODEwMjkyNTEy",   // 👇 🌟 2026-06-01 新增：樊莹烽
                 // "NDIxMjIyMTk5MDAzMTQwMTEz",  // 👇 🌟 2026-07-13 新增：王報平
-                "NDExMzI0MjAwMzEyMjUyNDFY", //韩于克
+                // "NDExMzI0MjAwMzEyMjUyNDFY", //韩于克
                 "MjMxMTgxMTk5NTA0MjAxNTE4", //张春岩
                 "MjMxMTgxMTk5NjA5MTgxODMy", //常健
             ],
@@ -598,13 +598,13 @@ const LOC_CONFIGS = {
             //     keepNormal: false
             // },
             // 韩于克
-            "NDExMzI0MjAwMzEyMjUyNDFY": {
-                // receptionistId: "A2449801", // 龚旭明
-                // receptionistId: "A2319601", // 赵海富
-                // receptionistId: "A2451885", // 张凯
-                receptionistId: "61908845",   // 李泊绪
-                keepNormal: true
-            },
+            // "NDExMzI0MjAwMzEyMjUyNDFY": {
+            //     // receptionistId: "A2449801", // 龚旭明
+            //     // receptionistId: "A2319601", // 赵海富
+            //     // receptionistId: "A2451885", // 张凯
+            //     receptionistId: "61908845",   // 李泊绪
+            //     keepNormal: true
+            // },
             
         },
         // A08 的独立老组包逻辑 (已加入指定接待人合并支持)
