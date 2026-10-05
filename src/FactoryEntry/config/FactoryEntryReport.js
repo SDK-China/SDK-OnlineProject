@@ -734,7 +734,8 @@ const LOC_CONFIGS = {
                 "MTMwMzIxMTk5NjExMDk5MDM3",  // 董建岐
                 "NDQwMTgxMTk5ODA4MTczMDE2",   // 梁梓杰
                 "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
-                "MjExNDAyMTk5MTAzMjkxODEy"    // 王石磊
+                "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
+                "MTMwNTI5MjAwMTA4MjU0OTE0",   //贾宇浩
             ],
             regPerson: "15032325162",
             acToken: "53F44A99C6D8AADE22942CD9E1D803E8812FF4A4A8A756BE0A1659704557309F",
