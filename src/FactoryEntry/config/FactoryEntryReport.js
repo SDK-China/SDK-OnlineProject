@@ -712,7 +712,7 @@ const LOC_CONFIGS = {
                 // "MTMwMzIzMTk5MDAzMDc2NDE2", //张江宽
                 // "MTMwMzIzMTk4OTA5MDQ2NDEx", //付海超
                 "MDU4NDMzNDg=", //张道玄
-                "MTIwNDUxOTI=", //张乃文
+                // "MTIwNDUxOTI=", //张乃文
                 // "SzEzOTMxMihBKQ==", //陈毅鸿
                 "NDMxMjIyMTk5NzEyMDUzMzEz", //向林  
                 // "NTIyNzMxMjAwMDAxMTAzNjEx", //王煊廷
@@ -725,13 +725,13 @@ const LOC_CONFIGS = {
                 // "MDYyNDg5MDE=", //马可为
                 "WjkwOTQwMSg3KQ==", //冼延浩 (新)
                 "NDQxNDgxMTk4ODAzMTYwODky", //张远彬 (新)
-                "MDcyMjg1Nzc=", //朱会民 (新)
+                // "MDcyMjg1Nzc=", //朱会民 (新)
                 // "NTMyNDY5ODc0" //Denis Gerassimenko
                 // "NDIyMzI2MTk5NTA0Mjg2NDEx", //竇桂陽
                 "MTMwMzIzMjAwMzEyMDc1NjE1",  //周家豪
                 // "MTE2ODkyOTE="   // 👇 🌟新增：张建成
                 "MTMwNjM0MTk5OTEyMjAwMDEw",  // 张鑫达
-                "MTMwMzIxMTk5NjExMDk5MDM3",  // 董建岐
+                // "MTMwMzIxMTk5NjExMDk5MDM3",  // 董建岐
                 "NDQwMTgxMTk5ODA4MTczMDE2",   // 梁梓杰
                 "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
                 "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
