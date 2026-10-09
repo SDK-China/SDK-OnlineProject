@@ -94,6 +94,17 @@ function formatLogTime(log) {
     return timePart ? datePart + ' ' + timePart.replace(/-/g, ':') : datePart;
 }
 
+// 发包徽章：真实发包（红·呼吸脉冲） / 模拟发包（琥珀·静止圆点）
+function packetBadgeHtml(type) {
+    if (type === 'real') {
+        return '<span class="packet-badge packet-badge-real" title="此条日志包含真实发送出去的发包报文"><span class="packet-dot"></span>检测到真实发包</span>';
+    }
+    if (type === 'simulated') {
+        return '<span class="packet-badge packet-badge-sim" title="此条日志包含模拟/预览发包报文，并未真实发出"><span class="packet-dot"></span>检测到模拟发包</span>';
+    }
+    return '';
+}
+
 // 取日志日期（用于今日/历史过滤），缺 time 时回退到 key 里的时间戳
 function getLogDate(log) {
     const raw = (log && log.time) || (log && log.key ? String(log.key).split(':')[3] : '');
@@ -345,7 +356,7 @@ function renderLogs() {
                         <span class="${badgeClass}">${log.action}</span>
                         <span class="fw-bold text-dark small">🏢 ${log.location}</span>
                         <span class="font-monospace small text-muted bg-light px-2 py-0 rounded border">🕒 ${formatLogTime(log)}</span>
-                        ${log.hasPacket ? '<span class="packet-badge" title="此条日志内含发包报文数据"><span class="packet-dot"></span>检测到发包</span>' : ''}
+                        ${packetBadgeHtml(log.packetType)}
                     </div>
                     <div class="text-secondary small text-truncate">${log.summary}</div>
                 </div>

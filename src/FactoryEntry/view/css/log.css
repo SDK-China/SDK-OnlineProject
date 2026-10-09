@@ -23,18 +23,36 @@
     letter-spacing: 0.2px;
     white-space: nowrap;
     user-select: none;
+    border: 1px solid transparent;
+}
+/* 真实发包：玫瑰红 + 呼吸脉冲，一眼看出真的发出去了 */
+.packet-badge-real {
     color: #b91c1c;
     background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
-    border: 1px solid #fecdd3;
+    border-color: #fecdd3;
     box-shadow: 0 1px 2px rgba(190, 18, 60, 0.08);
+}
+/* 模拟发包：琥珀暖色 + 静止圆点，表示只是干跑/预览 */
+.packet-badge-sim {
+    color: #92400e;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #fde68a;
+    box-shadow: 0 1px 2px rgba(180, 83, 9, 0.08);
 }
 .packet-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
+    flex-shrink: 0;
+}
+.packet-badge-real .packet-dot {
     background: #ef4444;
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55);
     animation: packetPulse 1.8s ease-out infinite;
+}
+.packet-badge-sim .packet-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
 }
 @keyframes packetPulse {
     0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }

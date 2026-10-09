@@ -16,17 +16,46 @@ const redis = new Redis({
 });
 
 // ==========================================
-// 🌟 发包检测：递归扫描日志数据体，判断其中是否真的含有发包报文
-// 命中任意一份非空的 encodedBody / rawJson 即视为「检测到发包」
-// （UI生成 / 手动发送 / 自动续期三种日志都会被覆盖，便于前端统一渲染）
+// 🌟 发包检测：递归扫描日志数据体，找出所有发包报文节点
+// 只要命中任意一份非空的 encodedBody / rawJson，就说明这条日志「有发包」
 // ==========================================
-const containsPacketPayload = (node, depth = 0) => {
-    if (!node || depth > 6) return false;
-    if (Array.isArray(node)) return node.some(item => containsPacketPayload(item, depth + 1));
-    if (typeof node !== 'object') return false;
-    if (typeof node.encodedBody === 'string' && node.encodedBody.trim()) return true;
-    if (typeof node.rawJson === 'string' && node.rawJson.trim()) return true;
-    return Object.values(node).some(value => containsPacketPayload(value, depth + 1));
+const DRY_RUN_ID = '模拟实例(干跑)';
+
+const collectPacketNodes = (node, depth = 0, out = []) => {
+    if (!node || depth > 6) return out;
+    if (Array.isArray(node)) {
+        node.forEach(item => collectPacketNodes(item, depth + 1, out));
+        return out;
+    }
+    if (typeof node !== 'object') return out;
+    const hasBody = (typeof node.encodedBody === 'string' && node.encodedBody.trim()) ||
+                    (typeof node.rawJson === 'string' && node.rawJson.trim());
+    if (hasBody) out.push(node);
+    Object.values(node).forEach(value => collectPacketNodes(value, depth + 1, out));
+    return out;
+};
+
+// 判定日志里的发包类型：'real' 真实发包 / 'simulated' 模拟发包 / null 无发包
+const classifyPacket = (log) => {
+    const data = log && log.data;
+    const nodes = collectPacketNodes(data);
+    if (nodes.length === 0) return null;
+
+    // UI生成：只是生成了预览报文，从未真实提交，不算发包 → 不显示任何徽章
+    if (log.action === 'UI生成') return null;
+
+    // 自动续期：干跑(模拟)的包 id 固定为「模拟实例(干跑)」，其余都算真实发出过（含失败的尝试）
+    if (log.action === '自动续期') {
+        const details = Array.isArray(data.actionDetails) ? data.actionDetails : [];
+        const hasRealSend = details.some(d => d && d.payload && d.id !== DRY_RUN_ID);
+        return hasRealSend ? 'real' : 'simulated';
+    }
+
+    // 手动发送：真刀真枪提交出去了
+    if (log.action === '手动发送') return 'real';
+
+    // 兜底：命中模拟标记就算模拟，否则按真实发包处理
+    return nodes.some(n => n.id === DRY_RUN_ID) ? 'simulated' : 'real';
 };
 
 // ==========================================
@@ -94,9 +123,9 @@ router.post('/api/log-batch', express.json(), async (req, res) => {
             } catch (e) {
                 parsedData = { error: '解析失败', raw: rawValues[index] };
             }
-            // 🌟 给每条日志打上「是否含发包」标记，供前端在时间后面渲染徽章
-            const hasPacket = containsPacketPayload(parsedData);
-            return { key: key, ...parsedData, hasPacket };
+            // 🌟 给每条日志打上发包类型标记：real=真实发包 / simulated=模拟发包 / null=无发包
+            const packetType = classifyPacket(parsedData);
+            return { key: key, ...parsedData, hasPacket: !!packetType, packetType };
         });
 
         res.json({ success: true, data: logs });
