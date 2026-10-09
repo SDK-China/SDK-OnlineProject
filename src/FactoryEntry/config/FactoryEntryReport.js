@@ -495,6 +495,15 @@ const LOC_CONFIGS = {
                 visitReason: "设备维护与保养",
                 renewThreshold: 2,
                 renewDays: 7
+            },
+            // 付英丽
+            "F7049952": {
+                receptionistName: "付英丽",
+                receptionDepartment: "夾治具設計組",
+                receptionistPhone: "13333283801",
+                visitReason: "治具维修",
+                renewThreshold: 2,
+                renewDays: 7
             }
         },
 
@@ -535,7 +544,8 @@ const LOC_CONFIGS = {
                 // receptionistId: "A2449801", // 龚旭明
                 // receptionistId: "A2319601", // 赵海富
                 // receptionistId: "A2451885", // 张凯
-                receptionistId: "61908845",   // 李泊绪
+                // receptionistId: "61908845",   // 李泊绪
+                receptionistId: "F7049952",   // 付英丽
                 keepNormal: true
             },
             // 窦桂阳

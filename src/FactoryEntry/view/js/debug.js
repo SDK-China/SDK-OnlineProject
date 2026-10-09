@@ -242,10 +242,11 @@ async function generateCustom(loc) {
 }
 
 async function sendAllBatch(mainBtn, loc) {
-    const container = mainBtn.closest('.card') || document.getElementById('customResult-' + loc);
+    // 修复：让它能正确识别当前按钮究竟是在“自定义区域”还是“审核中区域”
+const container = mainBtn.closest('#pending-box-' + loc) || mainBtn.closest('#customResult-' + loc) || mainBtn.closest('.panel');
     const btns = Array.from(container.querySelectorAll('.batch-send-btn, .send-btn'));
     if (btns.length === 0) return alert('当前面板下没有找到可发送的数据包');
-    const pwd = prompt("⚠️ 批量发送确认\n即将为您自动发送这 " + btns.length + " 个数据包。\n为了防止触发风控，每个请求之间会强制间隔 1.8 秒。\n\n请输入操作密码：");
+    const pwd = prompt("⚠️ 批量发送确认\n即将为您自动发送这 " + btns.length + " 个数据包。\n为了防止触发风控，每个请求之间会强制间隔 5 秒。\n\n请输入操作密码：");
     if (!pwd) return;
     mainBtn.innerText = "🚀 队列自动发送中...";
     mainBtn.disabled = true;
