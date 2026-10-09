@@ -80,6 +80,26 @@ async function deleteSelected() {
 
 function getTodayStr() { return new Date().toISOString().split('T')[0]; }
 
+// 时间美化：2026-10-06_06-56-04 → 2026-10-06 06:56:04（顺带兼容末尾随机数）
+function formatLogTime(log) {
+    let raw = log && log.time;
+    if (!raw && log && log.key) {
+        raw = (String(log.key).split(':')[3] || '').replace(/_\d+$/, '');
+    }
+    raw = String(raw || '').trim();
+    if (!raw) return '未知时间';
+    const parts = raw.split('_');
+    const datePart = parts[0];
+    const timePart = (parts[1] || '').replace(/_\d+$/, '');
+    return timePart ? datePart + ' ' + timePart.replace(/-/g, ':') : datePart;
+}
+
+// 取日志日期（用于今日/历史过滤），缺 time 时回退到 key 里的时间戳
+function getLogDate(log) {
+    const raw = (log && log.time) || (log && log.key ? String(log.key).split(':')[3] : '');
+    return String(raw || '').split('_')[0];
+}
+
 async function fetchLogs() {
     const container = document.getElementById('logContainer');
     container.innerHTML = `
@@ -293,7 +313,7 @@ function renderLogs() {
     const todayStr = getTodayStr();
 
     const filtered = allLogs.filter(log => {
-        const logDate = log.time.split('_')[0];
+        const logDate = getLogDate(log);
         if (timeFilter === 'today' && logDate !== todayStr) return false;
         if (timeFilter === 'history' && logDate === todayStr) return false;
         if (actionFilter !== 'all' && log.action !== actionFilter) return false;
@@ -324,7 +344,8 @@ function renderLogs() {
                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                         <span class="${badgeClass}">${log.action}</span>
                         <span class="fw-bold text-dark small">🏢 ${log.location}</span>
-                        <span class="font-monospace small text-muted bg-light px-2 py-0 rounded border">🕒 ${log.time.replace('_', ' ')}</span>
+                        <span class="font-monospace small text-muted bg-light px-2 py-0 rounded border">🕒 ${formatLogTime(log)}</span>
+                        ${log.hasPacket ? '<span class="packet-badge" title="此条日志内含发包报文数据"><span class="packet-dot"></span>检测到发包</span>' : ''}
                     </div>
                     <div class="text-secondary small text-truncate">${log.summary}</div>
                 </div>

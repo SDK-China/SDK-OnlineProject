@@ -5,7 +5,7 @@ const { Redis } = require('@upstash/redis');
 require('../../../lib/env');
 
 const { LOC_CONFIGS } = require('../config/FactoryEntryReport');
-const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan } = require('../service/FactoryEntryReport');
+const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan, resolveCustomReceptionists } = require('../service/FactoryEntryReport');
 const { decode, delay, getFormattedDate } = require('../../../lib/utils');
 
 const router = express.Router();
@@ -71,32 +71,23 @@ router.post('/generate-payload', express.json(), (req, res) => {
             const nameField = personInfo.find(f => f.label === '姓名');
             const name = nameField && nameField.fieldData ? nameField.fieldData.value : idBase64;
 
-            // 👇 路由层智能拼合：确保“生成报文”界面能正确显示接待人姓名
-            let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
-            if (customConf) {
-                const recId = customConf.receptionistId;
-                const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
-                customConf = {
-                    ...customConf,
-                    receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
-                    receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
-                    receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
-                    visitReason: recInfo.visitReason || customConf.visitReason,
-                    keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
-                };
-            }
+            // 👇 路由层智能拼合：一个人可绑定多个专属接待人（多开），统一标准化后逐个生成专单
+            const customConfs = resolveCustomReceptionists(locConfig, idBase64);
 
-            const trackNormal = !customConf || customConf.keepNormal;
-            const trackCustom = !!customConf;
+            // 只要没有任何专属接待人，或任意一个专属配置标记了 keepNormal，就保留大部队包
+            const trackNormal = customConfs.length === 0 || customConfs.some(c => c.keepNormal !== false);
 
             if (trackNormal) {
                 normalGroup.push({ idBase64, name, customConf: null });
             }
-            if (trackCustom) {
+            customConfs.forEach(customConf => {
                 const recId = customConf.receptionistId || 'unknown';
                 if (!specialGroupsMap[recId]) specialGroupsMap[recId] = [];
-                specialGroupsMap[recId].push({ idBase64, name: name + " ⭐", customConf });
-            }
+                // 同一个人在同一接待人下只出现一次，防止重复拼车
+                if (!specialGroupsMap[recId].some(g => g.idBase64 === idBase64)) {
+                    specialGroupsMap[recId].push({ idBase64, name: name + " ⭐", customConf });
+                }
+            });
         });
 
         const requests = [];

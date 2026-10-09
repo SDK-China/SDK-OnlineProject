@@ -126,6 +126,71 @@ const submitApplication = async (reqTask, locConfig) => {
     }
 };
 
+// ==========================================
+// 🌟 一个人「多开」支持：把专属接待人配置统一标准化为数组
+// 兼容以下全部写法（老写法完全不变，新写法纯追加）：
+//   1) 老写法（单开/双开）: { receptionistId: "61908845", keepNormal: true }
+//   2) 纯追加多开:          { receptionistId: "F7049952", receptionists: ["61908845"], keepNormal: true }
+//   3) 全新多开:            { receptionists: ["61908845", "F7049952"], keepNormal: true }
+//   4) 极简多开:            { receptionistIds: ["61908845", "F7049952"] }
+//   5) 直接数组:            [{ receptionistId: "61908845" }, "F7049952"]
+//   6) 单个字符串:          "61908845"
+// ==========================================
+const normalizeCustomReceptionists = (rawConf) => {
+    if (!rawConf) return [];
+
+    let entries;
+    if (typeof rawConf === 'string') {
+        entries = [rawConf];
+    } else if (Array.isArray(rawConf)) {
+        entries = rawConf;
+    } else {
+        entries = [];
+        // 老写法：单条 receptionistId 依然完整生效（连同它自己的覆盖字段）
+        if (rawConf.receptionistId) entries.push(rawConf);
+        // 新写法：纯追加，不破坏老内容
+        if (Array.isArray(rawConf.receptionists)) entries.push(...rawConf.receptionists);
+        if (Array.isArray(rawConf.receptionistIds)) entries.push(...rawConf.receptionistIds);
+        if (entries.length === 0) entries.push(rawConf);
+    }
+
+    const topKeepNormal = (!Array.isArray(rawConf) && typeof rawConf === 'object' && rawConf.keepNormal !== undefined)
+        ? rawConf.keepNormal
+        : undefined;
+
+    const seen = new Set();
+    return entries.map(entry => {
+        const item = typeof entry === 'string' ? { receptionistId: entry } : { ...(entry || {}) };
+        if (!item.receptionistId && item.id) item.receptionistId = item.id;
+        if (topKeepNormal !== undefined) item.keepNormal = topKeepNormal;
+        if (item.keepNormal === undefined) item.keepNormal = true;
+        return item;
+    }).filter(item => {
+        if (!item.receptionistId) return false;
+        if (seen.has(item.receptionistId)) return false; // 去重，防止重复开同一个接待人
+        seen.add(item.receptionistId);
+        return true;
+    });
+};
+
+// 把「人员 → 专属接待人」（支持多开数组）与「接待人信息池」拼合，返回可直接使用的配置数组
+const resolveCustomReceptionists = (locConfig, idBase64) => {
+    const rawConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
+    return normalizeCustomReceptionists(rawConf).map(customConf => {
+        const recId = customConf.receptionistId;
+        const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
+        return {
+            ...customConf,
+            receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
+            receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
+            receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
+            visitReason: recInfo.visitReason || customConf.visitReason,
+            keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
+        };
+    });
+};
+
+
 const calculatePlan = (idStatusMap, locConfig) => {
     const nowMs = Date.now();
     const todayObj = new Date(nowMs + 28800000);
@@ -151,23 +216,11 @@ const calculatePlan = (idStatusMap, locConfig) => {
         const nameField = personInfo.find(f => f.label === '姓名');
         const name = nameField && nameField.fieldData ? nameField.fieldData.value : "未知";
 
-        // 👇 核心修复：将“个人精简配置”与“全局接待人配置池”智能拼合，彻底消灭 undefined
-        let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
-        if (customConf) {
-            const recId = customConf.receptionistId;
-            const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
-            customConf = {
-                ...customConf,
-                receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
-                receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
-                receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
-                visitReason: recInfo.visitReason || customConf.visitReason,
-                keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
-            };
-        }
+        // 👇 核心修复：把「个人专属接待人配置」（支持多开数组）与「全局接待人配置池」智能拼合，彻底消灭 undefined
+        const customConfs = resolveCustomReceptionists(locConfig, idBase64);
 
-        const trackNormal = !customConf || customConf.keepNormal; // 是否需要发普通单
-        const trackCustom = !!customConf;                         // 是否需要发专属单
+        // 只要没有任何专属接待人，或任意一个专属配置标记了 keepNormal，就保留大部队轨迹
+        const trackNormal = customConfs.length === 0 || customConfs.some(c => c.keepNormal !== false);
         const getMaxEnd = (filterFn) => {
             let max = 0;
             records.forEach(r => {
@@ -186,16 +239,17 @@ const calculatePlan = (idStatusMap, locConfig) => {
                 if (locConfig.normalReceptionistId) {
                     return r.rPerson === locConfig.normalReceptionistId;
                 }
-                return !customConf || r.rPerson !== customConf.receptionistId;
+                // 多开时：任何一个专属接待人下的记录都不算大部队
+                return !customConfs.some(c => r.rPerson === c.receptionistId);
             });
             virtualUsers.push({ idBase64, type: 'normal', maxEndTs, customConf: null, name });
         }
 
-        // 处理专属轨迹 (只查挂在专属工号下的记录)
-        if (trackCustom) {
+        // 处理专属轨迹 (一个人可以挂在多个专属接待人下 → 多开)
+        customConfs.forEach(customConf => {
             const maxEndTs = getMaxEnd(r => r.rPerson === customConf.receptionistId);
             virtualUsers.push({ idBase64, type: 'custom', maxEndTs, customConf, name: name + " ⭐" });
-        }
+        });
     }
 
     // 👇 【大部队追赶机制核心算法】 👇
@@ -419,20 +473,8 @@ const calculatePendingPlan = (idStatusMap, locConfig) => {
         const nameField = personInfo.find(f => f.label === '姓名');
         const name = nameField && nameField.fieldData ? nameField.fieldData.value : "未知";
         
-        // 👇 同步修复：确保审核中的打包提示也能正确显示接待人姓名
-        let customConf = locConfig.customReceptionists && locConfig.customReceptionists[idBase64];
-        if (customConf) {
-            const recId = customConf.receptionistId;
-            const recInfo = (locConfig.receptionists && locConfig.receptionists[recId]) || {};
-            customConf = {
-                ...customConf,
-                receptionistName: recInfo.receptionistName || customConf.receptionistName || "专属接待人",
-                receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
-                receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
-                visitReason: recInfo.visitReason || customConf.visitReason,
-                keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
-            };
-        }
+        // 👇 同步修复：一个人可绑定多个专属接待人（多开），这里统一标准化
+        const customConfs = resolveCustomReceptionists(locConfig, idBase64);
 
         // 👇 🌟 屏障逻辑第一步：提前收集该人员所有“已通过”的单据
         const passedSet = new Set();
@@ -457,18 +499,33 @@ const calculatePendingPlan = (idStatusMap, locConfig) => {
                 if (passedSet.has(`${targetTs}_${r.rPerson}`)) return;
 
                 const targetDateStr = getFormattedDate(targetTs);
-                const isCustom = customConf && (r.rPerson === customConf.receptionistId || !customConf.keepNormal);
-                const recId = isCustom ? customConf.receptionistId : (locConfig.normalReceptionistId || 'NORMAL');
 
-                pendingItems.push({
-                    idBase64,
-                    name: isCustom ? `${name} ⭐` : name,
-                    targetTs,
-                    targetDateStr,
-                    isCustom: !!isCustom,
-                    customConf: isCustom ? customConf : null,
-                    recId,
-                    recName: isCustom ? customConf.receptionistName : "常规大部队"
+                // 👇 多开兼容：一条审核中记录可能命中多个专属接待人，未命中时按老规则回落
+                const matchedConfs = customConfs.filter(c => r.rPerson === c.receptionistId);
+                let targets;
+                if (matchedConfs.length > 0) {
+                    targets = matchedConfs.map(c => ({ isCustom: true, customConf: c }));
+                } else {
+                    // 老写法兼容：keepNormal === false 时，历史单据仍归属到专属接待人
+                    const fallbackConfs = customConfs.filter(c => !c.keepNormal);
+                    targets = fallbackConfs.length > 0
+                        ? fallbackConfs.map(c => ({ isCustom: true, customConf: c }))
+                        : [{ isCustom: false, customConf: null }];
+                }
+
+                targets.forEach(({ isCustom, customConf }) => {
+                    const recId = isCustom ? customConf.receptionistId : (locConfig.normalReceptionistId || 'NORMAL');
+
+                    pendingItems.push({
+                        idBase64,
+                        name: isCustom ? `${name} ⭐` : name,
+                        targetTs,
+                        targetDateStr,
+                        isCustom,
+                        customConf,
+                        recId,
+                        recName: isCustom ? customConf.receptionistName : "常规大部队"
+                    });
                 });
             }
         });
@@ -526,4 +583,4 @@ const calculatePendingPlan = (idStatusMap, locConfig) => {
     return { totalPendingCount: pendingItems.length, requests };
 };
 
-module.exports = { GLOBAL_HEADERS, checkSingleStatus, getAllStatuses, checkSafeToRun, submitApplication, calculatePlan, calculatePendingPlan };
+module.exports = { GLOBAL_HEADERS, checkSingleStatus, getAllStatuses, checkSafeToRun, submitApplication, calculatePlan, calculatePendingPlan, normalizeCustomReceptionists, resolveCustomReceptionists };

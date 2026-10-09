@@ -16,6 +16,20 @@ const redis = new Redis({
 });
 
 // ==========================================
+// 🌟 发包检测：递归扫描日志数据体，判断其中是否真的含有发包报文
+// 命中任意一份非空的 encodedBody / rawJson 即视为「检测到发包」
+// （UI生成 / 手动发送 / 自动续期三种日志都会被覆盖，便于前端统一渲染）
+// ==========================================
+const containsPacketPayload = (node, depth = 0) => {
+    if (!node || depth > 6) return false;
+    if (Array.isArray(node)) return node.some(item => containsPacketPayload(item, depth + 1));
+    if (typeof node !== 'object') return false;
+    if (typeof node.encodedBody === 'string' && node.encodedBody.trim()) return true;
+    if (typeof node.rawJson === 'string' && node.rawJson.trim()) return true;
+    return Object.values(node).some(value => containsPacketPayload(value, depth + 1));
+};
+
+// ==========================================
 // 1. 提供后端 API：极限称重，按 10MB 物理红线进行智能打包
 // ==========================================
 router.get('/api/log-plan', async (req, res) => {
@@ -80,7 +94,9 @@ router.post('/api/log-batch', express.json(), async (req, res) => {
             } catch (e) {
                 parsedData = { error: '解析失败', raw: rawValues[index] };
             }
-            return { key: key, ...parsedData };
+            // 🌟 给每条日志打上「是否含发包」标记，供前端在时间后面渲染徽章
+            const hasPacket = containsPacketPayload(parsedData);
+            return { key: key, ...parsedData, hasPacket };
         });
 
         res.json({ success: true, data: logs });

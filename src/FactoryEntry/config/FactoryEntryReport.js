@@ -539,13 +539,14 @@ const LOC_CONFIGS = {
                 receptionistId: "61908845",   // 李泊绪
                 keepNormal: true
             },
-            // 孙德凯
+            // 孙德凯（🌟 多开示例：大部队 + 李泊绪 + 付英丽）
             "MjMwMjMwMjAwMzAxMDEyMTM1": {
                 // receptionistId: "A2449801", // 龚旭明
                 // receptionistId: "A2319601", // 赵海富
                 // receptionistId: "A2451885", // 张凯
                 // receptionistId: "61908845",   // 李泊绪
-                receptionistId: "F7049952",   // 付英丽
+                receptionistId: "61908845",   // 李泊绪（老写法依然生效）
+                receptionists: ["F7049952"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
                 keepNormal: true
             },
             // 窦桂阳
@@ -717,7 +718,7 @@ const LOC_CONFIGS = {
 
         query: {
             visitorIdNos: [
-                // "MTMwMzIzMTk5MjEyMTY2NDM0",  //张江路
+                "MTMwMzIzMTk5MjEyMTY2NDM0",  //张江路
                 // "MTMwMzIzMTk5ODA2MTQxMDU4", //刘宏飞
                 // "MTMwMzIzMTk5MDAzMDc2NDE2", //张江宽
                 // "MTMwMzIzMTk4OTA5MDQ2NDEx", //付海超
@@ -742,9 +743,9 @@ const LOC_CONFIGS = {
                 // "MTE2ODkyOTE="   // 👇 🌟新增：张建成
                 "MTMwNjM0MTk5OTEyMjAwMDEw",  // 张鑫达
                 // "MTMwMzIxMTk5NjExMDk5MDM3",  // 董建岐
-                "NDQwMTgxMTk5ODA4MTczMDE2",   // 梁梓杰
+                // "NDQwMTgxMTk5ODA4MTczMDE2",   // 梁梓杰
                 "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
-                "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
+                // "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
                 "MTMwNTI5MjAwMTA4MjU0OTE0",   //贾宇浩
             ],
             regPerson: "15032325162",
