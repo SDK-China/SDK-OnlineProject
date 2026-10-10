@@ -1,7 +1,7 @@
-// 访客通配置 (多厂区)
+// 访客通配置 (多厂区：A08 = 鹏鼎，Q01/QA01 = 礼鼎)
 const CONFIGS = {
-    'A08': {
-        title: "A08 访客通 Pro V1.5",
+    'A08': {   // 鹏鼎
+        title: "鹏鼎 访客通 Pro V1.5",
         visitorIdNos: [
             "MTMwMzIzMTk4NjAyMjgwODFY",  //康
                 "MTMwMzIyMTk4ODA2MjQyMDE4", //张
@@ -32,8 +32,8 @@ const CONFIGS = {
         regPerson: "17614625112",
         acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F"
     },
-    'Q01': {
-        title: "QA01 访客通 Pro V1.5",
+    'Q01': {   // 礼鼎
+        title: "礼鼎 访客通 Pro V1.5",
         visitorIdNos: [
                 "MTMwMzIzMTk5MjEyMTY2NDM0",  //张江路
                 "MTMwMzIzMTk5ODA2MTQxMDU4", //刘宏飞

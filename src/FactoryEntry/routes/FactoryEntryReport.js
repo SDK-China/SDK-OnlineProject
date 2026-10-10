@@ -19,7 +19,7 @@ const redis = new Redis({
 /**
  * 统一的数据库上传辅助函数
  * @param {string} actionType - 操作类型 (如 'UI生成', '自动续期', '手动发送')
- * @param {string} location - 厂区代码 (如 'A08', 'Q01')
+ * @param {string} location - 厂区代码 ( 'PengDing' = 鹏鼎, 'LiDing' = 礼鼎 )
  * @param {string} summary - 简要说明
  * @param {object} payloadData - 具体的数据包或日志详情 (会自动转成JSON)
  */
@@ -30,7 +30,7 @@ const saveLogToRedis = async (actionType, location, summary, payloadData) => {
         const timeStr = new Date(nowMs + 28800000).toISOString().replace(/T/, '_').replace(/:/g, '-').replace(/\..+/, '');
 
         // 构造极度规整的 Key： 类型:厂区:时间_随机数
-        // 例如：FactoryLog:UI生成:Q01:2026-05-11_14-30-00_123
+        // 例如：FactoryLog:UI生成:LiDing:2026-05-11_14-30-00_123
         const key = `FactoryLog:${actionType}:${location || 'GLOBAL'}:${timeStr}_${Math.floor(Math.random() * 1000)}`;
 
         const logRecord = {

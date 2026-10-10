@@ -5,7 +5,7 @@ const { getBeijingDayId, getBeijingTimeStr, getFormattedDate, getHeaders, fetchP
 
 const router = express.Router();
 
-// 厂区配置接口：供前端静态页面获取 A08/Q01 的 title + 人员列表
+// 厂区配置接口：供前端静态页面获取 [鹏鼎 A08] / [礼鼎 Q01] 的 title + 人员列表
 router.get('/visitor-config', (req, res) => {
     const configs = {
         'A08': { title: CONFIGS['A08'].title, ids: CONFIGS['A08'].visitorIdNos },

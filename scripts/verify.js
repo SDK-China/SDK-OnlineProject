@@ -6,8 +6,8 @@
  *       与当前模块化重构后的代码做 deepStrictEqual 逐字段比对。
  *
  * 覆盖:
- *   1) 人员名单 PERSON_DB / 组包模板 / Q01 克隆解析 / 请求头 —— 核心数据完整性
- *   2) buildPayload 发包体 (A08 常规 / A08 专属 / Q01 完美克隆) —— 字节级
+ *   1) 人员名单 PERSON_DB / 组包模板 / LiDing 克隆解析 / 请求头 —— 核心数据完整性
+ *   2) buildPayload 发包体 (PengDing 常规 / PengDing 专属 / LiDing 完美克隆) —— 字节级
  *   3) calculatePlan / calculatePendingPlan —— 计划计算
  *
  * 用法: node scripts/verify.js   (需在 git 仓库内运行)
@@ -59,31 +59,31 @@ console.log('=== 1. 核心数据完整性 ===');
 check('PERSON_DB (人员名单)', newPersons, orig.PERSON_DB);
 check('FORM_BASE', newTemplates.FORM_BASE, orig.FORM_BASE);
 check('FORM_TAIL', newTemplates.FORM_TAIL, orig.FORM_TAIL);
-check('A08_TEMPLATE', newTemplates.A08_TEMPLATE, orig.A08_TEMPLATE);
-check('Q01_PERSON_DB', newTemplates.Q01_PERSON_DB, orig.Q01_PERSON_DB);
-check('Q01_ORIGINAL_ORDER', newTemplates.Q01_ORIGINAL_ORDER, orig.Q01_ORIGINAL_ORDER);
-check('Q01_TEMPLATE_JSON', newTemplates.Q01_TEMPLATE_JSON, orig.Q01_TEMPLATE_JSON);
+check('PENGDING_TEMPLATE', newTemplates.PENGDING_TEMPLATE, orig.A08_TEMPLATE);
+check('LIDING_PERSON_DB', newTemplates.LIDING_PERSON_DB, orig.Q01_PERSON_DB);
+check('LIDING_ORIGINAL_ORDER', newTemplates.LIDING_ORIGINAL_ORDER, orig.Q01_ORIGINAL_ORDER);
+check('LIDING_TEMPLATE_JSON', newTemplates.LIDING_TEMPLATE_JSON, orig.Q01_TEMPLATE_JSON);
 check('GLOBAL_HEADERS', newServices.GLOBAL_HEADERS, orig.GLOBAL_HEADERS);
 
 console.log('=== 2. buildPayload 发包体字节级比对 ===');
 const ts = 1760000000000; // 固定时间戳，保证确定性
-const A08_ID_KANG = 'MTMwMzIzMTk4NjAyMjgwODFY'; // 康
-const A08_ID_ZHANG = 'MTMwMzIyMTk4ODA2MjQyMDE4'; // 张
-const Q01_IDS = ['MDU4NDMzNDg=', 'MTIwNDUxOTI=', 'NDMxMjIyMTk5NzEyMDUzMzEz'];
+const PENGDING_ID_KANG = 'MTMwMzIzMTk4NjAyMjgwODFY'; // 康
+const PENGDING_ID_ZHANG = 'MTMwMzIyMTk4ODA2MjQyMDE4'; // 张
+const LIDING_IDS = ['MDU4NDMzNDg=', 'MTIwNDUxOTI=', 'NDMxMjIyMTk5NzEyMDUzMzEz'];
 
-check('A08 buildPayload(常规大部队)',
-    newLOC.A08.buildPayload([A08_ID_KANG, A08_ID_ZHANG], ts, newLOC.A08, null),
-    orig.LOC_CONFIGS.A08.buildPayload([A08_ID_KANG, A08_ID_ZHANG], ts, orig.LOC_CONFIGS.A08, null)
+check('PengDing buildPayload(常规大部队)',
+    newLOC.PengDing.buildPayload([PENGDING_ID_KANG, PENGDING_ID_ZHANG], ts, newLOC.PengDing, null),
+    orig.LOC_CONFIGS.A08.buildPayload([PENGDING_ID_KANG, PENGDING_ID_ZHANG], ts, orig.LOC_CONFIGS.A08, null)
 );
 
-check('A08 buildPayload(专属接待人)',
-    newLOC.A08.buildPayload([A08_ID_KANG], ts, newLOC.A08, newLOC.A08.customReceptionists[A08_ID_KANG]),
-    orig.LOC_CONFIGS.A08.buildPayload([A08_ID_KANG], ts, orig.LOC_CONFIGS.A08, orig.LOC_CONFIGS.A08.customReceptionists[A08_ID_KANG])
+check('PengDing buildPayload(专属接待人)',
+    newLOC.PengDing.buildPayload([PENGDING_ID_KANG], ts, newLOC.PengDing, newLOC.PengDing.customReceptionists[PENGDING_ID_KANG]),
+    orig.LOC_CONFIGS.A08.buildPayload([PENGDING_ID_KANG], ts, orig.LOC_CONFIGS.A08, orig.LOC_CONFIGS.A08.customReceptionists[PENGDING_ID_KANG])
 );
 
-check('Q01 buildPayload(完美克隆)',
-    newLOC.Q01.buildPayload(Q01_IDS, ts, newLOC.Q01, null),
-    orig.LOC_CONFIGS.Q01.buildPayload(Q01_IDS, ts, orig.LOC_CONFIGS.Q01, null)
+check('LiDing buildPayload(完美克隆)',
+    newLOC.LiDing.buildPayload(LIDING_IDS, ts, newLOC.LiDing, null),
+    orig.LOC_CONFIGS.Q01.buildPayload(LIDING_IDS, ts, orig.LOC_CONFIGS.Q01, null)
 );
 
 console.log('=== 3. calculatePlan / calculatePendingPlan 计划计算 ===');
@@ -103,11 +103,11 @@ function makeStatusMap(idsBase64) {
     });
     return map;
 }
-const a08ids = [A08_ID_KANG, A08_ID_ZHANG, 'MjMwMjMwMjAwMzAxMDEyMTM1'];
-const mock = makeStatusMap(a08ids);
+const pengDingIds = [PENGDING_ID_KANG, PENGDING_ID_ZHANG, 'MjMwMjMwMjAwMzAxMDEyMTM1'];
+const mock = makeStatusMap(pengDingIds);
 
-check('calculatePlan', newServices.calculatePlan(mock, newLOC.A08), orig.calculatePlan(mock, orig.LOC_CONFIGS.A08));
-check('calculatePendingPlan', newServices.calculatePendingPlan(mock, newLOC.A08), orig.calculatePendingPlan(mock, orig.LOC_CONFIGS.A08));
+check('calculatePlan', newServices.calculatePlan(mock, newLOC.PengDing), orig.calculatePlan(mock, orig.LOC_CONFIGS.A08));
+check('calculatePendingPlan', newServices.calculatePendingPlan(mock, newLOC.PengDing), orig.calculatePendingPlan(mock, orig.LOC_CONFIGS.A08));
 
 try { fs.unlinkSync(exposedPath); } catch (e) {}
 

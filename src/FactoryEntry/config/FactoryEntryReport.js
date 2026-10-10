@@ -1,4 +1,4 @@
-// 入厂报备：全部配置与数据 (人员名单 PERSON_DB / 组包模板 / Q01 解析 / 厂区配置 LOC_CONFIGS)
+// 入厂报备：全部配置与数据 (人员名单 PERSON_DB / 组包模板 / 礼鼎 LiDing 解析 / 厂区配置 LOC_CONFIGS)
 const fs = require('fs');
 const path = require('path');
 const { decode, getFormattedDate } = require('../../../lib/utils');
@@ -224,7 +224,7 @@ const PERSON_DB = {
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
     ],
     // =========================================================
-    // 🌟 2026-06-01 新增：樊莹烽 (A08 厂区张凯专单)
+    // 🌟 2026-06-01 新增：樊莹烽 (鹏鼎 张凯专单)
     // =========================================================
     "MzMwNjAyMTk5ODEwMjkyNTEy": [
         { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0" }] },
@@ -252,7 +252,7 @@ const PERSON_DB = {
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
     ],
     // =========================================================
-    // 🌟 2026-07-31 新增：韩于克 (QA08 厂区曹斗专单)
+    // 🌟 2026-07-31 新增：韩于克 (鹏鼎 曹斗专单)
     // =========================================================
     "NDExMzI0MjAwMzEyMjUyNDFY": [
         { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0" }] },
@@ -266,7 +266,7 @@ const PERSON_DB = {
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", label: "其他附件", "fieldData": { "value": [] } }
     ],
     // =========================================================
-    // 🌟 2026-08-24 新增：张春岩 (QA01 李泊绪专单)
+    // 🌟 2026-08-24 新增：张春岩 (礼鼎 李泊绪专单)
     // =========================================================
     "MjMxMTgxMTk5NTA0MjAxNTE4": [
         { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0", "status": "active" }] },
@@ -281,7 +281,7 @@ const PERSON_DB = {
     ],
 
     // =========================================================
-    // 🌟 2026-08-24 新增：常健 (QA01 李泊绪专单)
+    // 🌟 2026-08-24 新增：常健 (礼鼎 李泊绪专单)
     // =========================================================
     "MjMxMTgxMTk5NjA5MTgxODMy": [
         { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0", "status": "active" }] },
@@ -295,7 +295,7 @@ const PERSON_DB = {
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
     ],
     // =========================================================
-    // 🌟 2026-09-09 新增：梁蕴 (QA01 李泊绪专单)
+    // 🌟 2026-09-09 新增：梁蕴 (礼鼎 李泊绪专单)
     // =========================================================
     "NDEwMjI0MjAwNDExMDUyMzEw": [
         { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0", "status": "active" }] },
@@ -344,11 +344,11 @@ const FORM_TAIL = [
     { "componentName": "TextField", "fieldId": "textField_m4c5a41a", "label": "门岗保安", "fieldData": { "value": "15232353238" } }
 ];
 
-const A08_TEMPLATE = [];
-FORM_BASE.forEach(item => A08_TEMPLATE.push({ type: 'STATIC', item }));
-A08_TEMPLATE.push({ type: 'INJECT_TABLE' });
-FORM_TAIL.slice(0, 4).forEach(item => A08_TEMPLATE.push({ type: 'STATIC', item }));
-A08_TEMPLATE.push({
+const PENGDING_TEMPLATE = [];
+FORM_BASE.forEach(item => PENGDING_TEMPLATE.push({ type: 'STATIC', item }));
+PENGDING_TEMPLATE.push({ type: 'INJECT_TABLE' });
+FORM_TAIL.slice(0, 4).forEach(item => PENGDING_TEMPLATE.push({ type: 'STATIC', item }));
+PENGDING_TEMPLATE.push({
     type: 'INJECT_DATE_TS',
     template: {
         "componentName": "DateField",
@@ -359,7 +359,7 @@ A08_TEMPLATE.push({
     }
 });
 // 👇 🌟 新增：紧跟在时间戳后面，注入官方要求的新文本日期字段
-A08_TEMPLATE.push({
+PENGDING_TEMPLATE.push({
     type: 'INJECT_DATE_STR',
     template: {
         "componentName": "TextField",
@@ -368,27 +368,27 @@ A08_TEMPLATE.push({
         "fieldData": { "value": "" }
     }
 });
-FORM_TAIL.slice(4).forEach(item => A08_TEMPLATE.push({ type: 'STATIC', item }));
+FORM_TAIL.slice(4).forEach(item => PENGDING_TEMPLATE.push({ type: 'STATIC', item }));
 
 // ==========================================
-// Q01 自动化深度克隆解析区 (严格一致性保证)
+// 礼鼎 LiDing 自动化深度克隆解析区 (严格一致性保证)
 // ==========================================
-let Q01_PERSON_DB = {};
-let Q01_ORIGINAL_ORDER = {}; // 核心：记录 bin 文件中的原生人物顺序
-let Q01_TEMPLATE_JSON = null; // 核心：整个 JSON 树直接深拷贝
-let Q01_URL_PARAMS = null;    // 核心：保存所有的外层发包参数
+let LIDING_PERSON_DB = {};
+let LIDING_ORIGINAL_ORDER = {}; // 核心：记录 bin 文件中的原生人物顺序
+let LIDING_TEMPLATE_JSON = null; // 核心：整个 JSON 树直接深拷贝
+let LIDING_URL_PARAMS = null;    // 核心：保存所有的外层发包参数
 
 try {
     const binPath = path.join(__dirname, '..', '..', '..', 'QA01_request_body.bin');
     if (fs.existsSync(binPath)) {
         const rawContent = fs.readFileSync(binPath, 'utf-8');
-        Q01_URL_PARAMS = new URLSearchParams(rawContent);
+        LIDING_URL_PARAMS = new URLSearchParams(rawContent);
 
-        const valueStr = Q01_URL_PARAMS.get('value');
+        const valueStr = LIDING_URL_PARAMS.get('value');
         if (valueStr) {
-            Q01_TEMPLATE_JSON = JSON.parse(valueStr);
+            LIDING_TEMPLATE_JSON = JSON.parse(valueStr);
 
-            Q01_TEMPLATE_JSON.forEach(item => {
+            LIDING_TEMPLATE_JSON.forEach(item => {
                 if (item.componentName === 'TableField' && item.label && item.label.includes('人员')) {
                     const peopleArrays = item.fieldData.value;
                     peopleArrays.forEach((personArr, index) => {
@@ -396,33 +396,34 @@ try {
                         if (idField && idField.fieldData && idField.fieldData.value) {
                             const rawIdStr = String(idField.fieldData.value);
                             const base64Id = Buffer.from(rawIdStr).toString('base64');
-                            Q01_PERSON_DB[base64Id] = personArr;
-                            Q01_ORIGINAL_ORDER[base64Id] = index; // 【关键】锁死他们在抓包里的原生顺序！
+                            LIDING_PERSON_DB[base64Id] = personArr;
+                            LIDING_ORIGINAL_ORDER[base64Id] = index; // 【关键】锁死他们在抓包里的原生顺序！
                         }
                     });
                 }
             });
-            console.log(`✅ QA01_request_body.bin 解析成功，提取 ${Object.keys(Q01_PERSON_DB).length} 个人员原生配置`);
+            console.log(`✅ QA01_request_body.bin 解析成功，提取 ${Object.keys(LIDING_PERSON_DB).length} 个人员原生配置`);
         }
     } else {
-        console.warn("⚠️ 找不到 QA01_request_body.bin 文件，Q01 厂区组包功能将不可用！");
+        console.warn("⚠️ 找不到 QA01_request_body.bin 文件，礼鼎(LiDing) 厂区组包功能将不可用！");
     }
 } catch (e) {
     console.error("❌ 解析 QA01_request_body.bin 失败:", e.message);
 }
 
+// 厂区配置 (PengDing = 鹏鼎，LiDing = 礼鼎)
 const LOC_CONFIGS = {
-    'A08': {
-        // A08 的门禁阈值
+    'PengDing': {   // 鹏鼎
+        // 鹏鼎(PengDing) 的门禁阈值
         renewThreshold: 2,
         renewDays: 7,
-        title: "A08 厂区",
+        title: "鹏鼎 厂区",
         enabled: true,
 
-        // 👇 A08 账号身份凭证 (原封不动)
+        // 👇 鹏鼎(PengDing) 账号身份凭证 (原封不动)
         csrf_token: "e7daa879-7b83-40f7-8335-1a262747f2c9",
         cookie: "tianshu_corp_user=ding2b4c83bec54a29c6f2c783f7214b6d69_FREEUSER; tianshu_csrf_token=e7daa879-7b83-40f7-8335-1a262747f2c9; c_csrf=e7daa879-7b83-40f7-8335-1a262747f2c9; cookie_visitor_id=zfGITZnn; cna=QhOGIdjbQ3ABASQOBEFsQ0YG; xlly_s=1; tianshu_app_type=APP_GRVPTEOQ6D4B7FLZFYNJ; JSESSIONID=BF2C6304A367F22183E99C3E5B5181C4; tfstk=gOZxf6D0ah_YmbR2H5blSie9vWyOMa2qeSyBjfcD57F8iJ8615qgycFzMIcmSS4-67N-GjmfQ1Fun54imlewXAw__tlG3a243co1t6qOx-yqEsPFbo36NgwrKxT1rqiRmR_At6jhqZ9SXsC3nq6jmbMZNxMXlE6-VAH6fcgjG36-CAAX5jN_FThrQAOXfhG5VAkB5ci_186-QbGsfqN_FTHZNf91kGhG5b-Tu6E2PQTVe3t72x3x1HG9XDqyxFGLhbtMyWMxkt2jwht_4PdnXxc1VBhaV5nIku6MWXnrwAHYDOYE_yDTCvnBhny8G7ZKRufyjfsyqkqd5-AnU0LfeTLw7qMrh42tpxCQDiM-tTfH7FuY8YhheTLw7qMreXXrUF8Zky5..; isg=BJCQbJGPzSIDPJDoHxPbfgneatziWXSjkwUE44pgG-BuxflvPmhTMY7zmMuAWSx7",
-        // 🔪 新增：明确 A08 厂区大部队的常规接待人 (用于精准过滤普通组记录)
+        // 🔪 新增：明确 鹏鼎 大部队的常规接待人 (用于精准过滤普通组记录)
         normalReceptionistId: "62090782", // 曹斗的工号
         query: {
             visitorIdNos: [
@@ -639,7 +640,7 @@ const LOC_CONFIGS = {
                 keepNormal: true
             }, 
         },
-        // A08 的独立老组包逻辑 (已加入指定接待人合并支持)
+        // 鹏鼎(PengDing) 的独立老组包逻辑 (已加入指定接待人合并支持)
         buildPayload: (idsBase64, targetTs, locConfig, customConfig = null) => {
             const tableRows = idsBase64.map(id => locConfig.personDb[id]).filter(Boolean);
             const finalForm = [];
@@ -647,7 +648,7 @@ const LOC_CONFIGS = {
             // 👇 获取 YYYY-MM-DD 格式的字符串，供新字段使用
             const dateStr = new Date(targetTs + 28800000).toISOString().split('T')[0];
 
-            A08_TEMPLATE.forEach(block => {
+            PENGDING_TEMPLATE.forEach(block => {
                 if (block.type === 'STATIC') {
                     // 修复：必须进行深拷贝，否则会污染内存里的全局模板
                     finalForm.push(JSON.parse(JSON.stringify(block.item)));
@@ -664,7 +665,7 @@ const LOC_CONFIGS = {
                 }
             });
 
-            // 👇 【新增】如果传入了指定接待人配置，拦截并覆写 A08 的外层表单参数
+            // 👇 【新增】如果传入了指定接待人配置，拦截并覆写 鹏鼎(PengDing) 的外层表单参数
             if (customConfig) {
                 finalForm.forEach(item => {
                     if (item.label && String(item.label).includes('接待人工号') && customConfig.receptionistId) item.fieldData.value = customConfig.receptionistId;
@@ -682,9 +683,9 @@ const LOC_CONFIGS = {
             return { jsonStr, fullPostBody };
         }
     },
-    'Q01': {
-        title: "Q01 厂区",
-        // Q01 的门禁阈值
+    'LiDing': {   // 礼鼎
+        title: "礼鼎 厂区",
+        // 礼鼎(LiDing) 的门禁阈值
         renewThreshold: 2,
         renewDays: 7,
         enabled: true,
@@ -693,10 +694,10 @@ const LOC_CONFIGS = {
         csrf_token: "5581e41f-8c38-48d4-bea4-20d1f96af4db",
         cookie: "tianshu_corp_user=ding2b4c83bec54a29c6f2c783f7214b6d69_FREEUSER; tianshu_csrf_token=5581e41f-8c38-48d4-bea4-20d1f96af4db; c_csrf=5581e41f-8c38-48d4-bea4-20d1f96af4db; cookie_visitor_id=o5TLBWJ6; cna=KDksIgUMMBsCARuACb+fM//A; xlly_s=1; tianshu_app_type=APP_GRVPTEOQ6D4B7FLZFYNJ; JSESSIONID=5BF894CE5AFD8107A9C6124F8753BEB5; tfstk=gTlIf86UsykasoYp2M8NcrQKR6PevFR2Vaa-o4CFyWFpNgUbJ7orypYWNqngzWuJx0G7XcqKUDRHw8ijx0wk-ur8V0u-LFR2g203Z7nW0IRVHeDw8DaRwzLR6yzk7ypCdudzZ7K2bO58KINoAceYPk395zzz2un8eVCT-lU827n8XRUYuMF8w0L_6zzlJwUdwPBT8lE8w7n-WFauXyF8w0395zv_rtaGPouBPqRW4aBBtvE1w_h_5nNKRi1Lo34UdogUuOXi1i2QD2E1aHjKKrrQkjKNKrwIJjNE_HpZRlHKwWlpb_ijfxFswR7JVyHKlj2mwhsr4srb5yX5EkC75o865TXlaj5nMewO5_eLSPzw5F6rtJUg5o865TXupP4i3FT1UXf..; isg=BOzsBAulqRjsL70mvTB0y-TYtsgepZBPSDBScUYpsid4UGNbQrR-3bOndF_PIcin",
 
-        // 🔪 新增：明确Q01 厂区大部队的常规接待人 (用于精准过滤普通组记录)
+        // 🔪 新增：明确 礼鼎 大部队的常规接待人 (用于精准过滤普通组记录)
         // normalReceptionistId: "61990794", // 王晗的工号
 
-        // Q01 全局通用接待人配置 (未指定专属接待人的人员将默认使用这个)
+        // 礼鼎(LiDing) 全局通用接待人配置 (未指定专属接待人的人员将默认使用这个)
         // receptionistId: "82100751",    // 工号
         // receptionistName: "张宏敏",       // 姓名
         // receptionDepartment:"P2電測檢驗組",  //接待部门
@@ -752,24 +753,24 @@ const LOC_CONFIGS = {
             acToken: "53F44A99C6D8AADE22942CD9E1D803E8812FF4A4A8A756BE0A1659704557309F",
             queryUrl: "https://dingtalk.avaryholding.com:8443/dingplus/visitorConnector/visitorStatus"
         },
-        personDb: Q01_PERSON_DB,
+        personDb: LIDING_PERSON_DB,
 
-        // Q01 专有完美克隆组包逻辑 (加入了独立接待人支持)
+        // 礼鼎(LiDing) 专有完美克隆组包逻辑 (加入了独立接待人支持)
         buildPayload: (idsBase64, targetTs, locConfig, customConfig = null) => {
-            if (!Q01_TEMPLATE_JSON || !Q01_URL_PARAMS) throw new Error("QA01 模板未成功加载，无法生成合法报文！");
+            if (!LIDING_TEMPLATE_JSON || !LIDING_URL_PARAMS) throw new Error("礼鼎(LiDing) 模板未成功加载，无法生成合法报文！");
 
             const dateStr = getFormattedDate(targetTs);
 
             // 1. 严格排序
             const sortedIds = [...idsBase64].sort((a, b) => {
-                const indexA = Q01_ORIGINAL_ORDER[a] ?? 999;
-                const indexB = Q01_ORIGINAL_ORDER[b] ?? 999;
+                const indexA = LIDING_ORIGINAL_ORDER[a] ?? 999;
+                const indexB = LIDING_ORIGINAL_ORDER[b] ?? 999;
                 return indexA - indexB;
             });
             const finalTable = sortedIds.map(id => locConfig.personDb[id]).filter(Boolean);
 
             // 2. 深度克隆抓包来的原生 JSON 树
-            const finalForm = JSON.parse(JSON.stringify(Q01_TEMPLATE_JSON));
+            const finalForm = JSON.parse(JSON.stringify(LIDING_TEMPLATE_JSON));
 
             // 获取要注入的接待人信息：优先使用传入的指定配置(customConfig)，若无则降级使用全厂区通用配置
             const recId = customConfig ? customConfig.receptionistId : locConfig.receptionistId;
@@ -787,7 +788,7 @@ const LOC_CONFIGS = {
                 } else if (item.componentName === 'TextField' && String(item.label).includes('日期')) {
                     item.fieldData.value = dateStr;
                 }
-                // 拦截并替换 QA01 的接待人信息
+                // 拦截并替换 礼鼎(LiDing) 的接待人信息
                 else if (item.label && String(item.label).includes('接待人工号') && recId) {
                     item.fieldData.value = recId;
                 } else if (item.label && String(item.label).includes('接待人员') && recName) {
@@ -803,7 +804,7 @@ const LOC_CONFIGS = {
 
             // 4. 重建 URL Encoded 发包主体
             const parts = [];
-            for (const [key, val] of Q01_URL_PARAMS.entries()) {
+            for (const [key, val] of LIDING_URL_PARAMS.entries()) {
                 if (key === 'value') {
                     parts.push(`${key}=${encodeURIComponent(JSON.stringify(finalForm)).replace(/%20/g, '+')}`);
                 } else if (key === '_csrf_token' && locConfig.csrf_token) {
@@ -822,4 +823,4 @@ const LOC_CONFIGS = {
     }
 };
 
-module.exports = { LOC_CONFIGS, PERSON_DB, FORM_BASE, FORM_TAIL, A08_TEMPLATE, Q01_PERSON_DB, Q01_ORIGINAL_ORDER, Q01_TEMPLATE_JSON, Q01_URL_PARAMS };
+module.exports = { LOC_CONFIGS, PERSON_DB, FORM_BASE, FORM_TAIL, PENGDING_TEMPLATE, LIDING_PERSON_DB, LIDING_ORIGINAL_ORDER, LIDING_TEMPLATE_JSON, LIDING_URL_PARAMS };
