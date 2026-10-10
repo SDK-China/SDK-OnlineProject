@@ -78,7 +78,12 @@ function generateCardHtml(person) {
                     </div>
                 </div>` : '';
 
-            return `<div class="approver-block"><div class="approver-header"><span class="approver-name">接待人: ${group.approver}</span></div>${priorityHtml || '<div class="empty-tip" style="padding:4px 0;">无活跃记录</div>'}${historyHtml}</div>`;
+            // 🌟 接待人名字查不到时，不再显示“未知接待人”，直接省掉这行表头
+            const approverName = (group.approver && group.approver !== '未知接待人') ? group.approver : '';
+            const approverHeader = approverName
+                ? `<div class="approver-header"><span class="approver-name">接待人: ${approverName}</span></div>`
+                : '';
+            return `<div class="approver-block">${approverHeader}${priorityHtml || '<div class="empty-tip" style="padding:4px 0;">无活跃记录</div>'}${historyHtml}</div>`;
         }).join('');
     }
 
@@ -198,6 +203,18 @@ function loadData(isAuto) {
                 }
                 const wrapper = document.getElementById('wrapper-' + index);
                 if (wrapper && d.person) {
+                    // 🌟 无任何记录 / 查不到姓名的人：整张卡片从列表消失
+                    //（保留占位节点，日后查到数据会自动恢复显示；移除 app-card 类避免被搜索/排序重新显示）
+                    const hasRecords = Array.isArray(d.person.rawData) && d.person.rawData.length > 0;
+                    const nameUnknown = !d.person.name || d.person.name === '未知';
+                    if (!hasRecords || nameUnknown) {
+                        wrapper.style.display = 'none';
+                        wrapper.classList.remove('app-card');
+                        if (d.success === false) hasErr = true;
+                        checkFinished();
+                        return;
+                    }
+
                     const openHistoryBlocks = Array.from(wrapper.querySelectorAll('.approver-header')).map((header, i) => {
                         const content = header.parentElement.querySelector('.history-content');
                         return (content && content.classList.contains('show')) ? i : -1;
