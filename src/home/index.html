@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b14">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>在线服务台 · SDK-OnlineProject</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#080b14;
+  --panel:rgba(255,255,255,.045);
+  --panel-2:rgba(255,255,255,.085);
+  --line:rgba(255,255,255,.10);
+  --line-2:rgba(255,255,255,.20);
+  --text:#e9eefb;
+  --muted:#8b97b6;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;min-height:100vh;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(760px 520px at 10% -10%, rgba(91,140,255,.32), transparent 62%),
+    radial-gradient(660px 460px at 94% 2%, rgba(34,211,238,.20), transparent 60%),
+    radial-gradient(720px 520px at 50% 110%, rgba(167,139,250,.18), transparent 62%);
+}
+
+.wrap{
+  max-width:1080px;margin:0 auto;
+  padding:calc(30px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(46px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+}
+
+/* ---------- Hero ---------- */
+.hero{margin-bottom:34px}
+.brand{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;
+  background:var(--panel);border:1px solid var(--line);font-size:12px;color:var(--muted);letter-spacing:.4px}
+.brand i{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.16);animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{
+  margin:18px 0 10px;font-size:clamp(30px,8vw,44px);line-height:1.12;letter-spacing:-.5px;
+  background:linear-gradient(100deg,#ffffff 0%,#a8c4ff 46%,#7ce9f8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65;max-width:34em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;font-size:12.5px;
+  background:var(--panel);border:1px solid var(--line);color:#b9c6e4}
+.chip.clock{font-family:var(--mono);letter-spacing:.5px;color:#cfe0ff}
+
+/* ---------- Section ---------- */
+section{margin-bottom:36px}
+.sec-head{display:flex;align-items:center;gap:9px;margin:0 0 14px}
+.sec-head h2{margin:0;font-size:15px;font-weight:650;letter-spacing:.3px;color:#dfe7fb}
+.sec-head .bar{width:3px;height:15px;border-radius:2px;background:linear-gradient(180deg,#5b8cff,#22d3ee)}
+.sec-head em{font-style:normal;font-size:11.5px;color:var(--muted);font-family:var(--mono);
+  padding:2px 7px;border-radius:999px;background:var(--panel);border:1px solid var(--line)}
+
+/* ---------- Cards ---------- */
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(258px,1fr))}
+.card{
+  position:relative;display:flex;flex-direction:column;min-width:0;
+  padding:16px 16px 14px;border-radius:16px;text-decoration:none;color:inherit;
+  background:var(--panel);border:1px solid var(--line);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;opacity:0;
+  background:radial-gradient(180px 120px at 12% 0%, rgba(var(--cr),.26), transparent 70%);
+  transition:opacity .18s ease;
+}
+.card:active{transform:scale(.985)}
+@media (hover:hover){
+  .card:hover{background:var(--panel-2);border-color:rgba(var(--cr),.55);transform:translateY(-2px);
+    box-shadow:0 14px 30px -18px rgba(var(--cr),.8)}
+  .card:hover::after{opacity:1}
+  .card:hover .go{transform:translateX(3px);color:var(--c)}
+}
+.card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ico{
+  display:grid;place-items:center;width:38px;height:38px;border-radius:11px;font-size:19px;
+  background:rgba(var(--cr),.14);
+  border:1px solid rgba(var(--cr),.32);
+}
+.go{font-size:15px;color:#5c6a8a;transition:transform .18s ease,color .18s ease}
+.card h3{margin:0 0 6px;font-size:15px;font-weight:640;letter-spacing:.2px}
+.card p{margin:0 0 12px;font-size:12.5px;line-height:1.6;color:var(--muted);flex:1 1 auto}
+.card code{font-family:var(--mono);font-size:10.5px;color:#6f7c9c;overflow-wrap:anywhere;word-break:break-all;line-height:1.5}
+
+/* ---------- API ---------- */
+.api-box{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+.api-box summary{
+  display:flex;align-items:center;gap:9px;padding:15px 16px;cursor:pointer;list-style:none;
+  font-size:14px;font-weight:600;color:#dfe7fb;-webkit-tap-highlight-color:transparent;
+}
+.api-box summary::-webkit-details-marker{display:none}
+.api-box summary em{font-style:normal;font-size:11.5px;color:var(--muted);font-family:var(--mono);
+  padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.api-box summary .caret{margin-left:auto;color:#5c6a8a;transition:transform .2s ease}
+.api-box[open] summary .caret{transform:rotate(90deg)}
+.api-body{padding:0 8px 12px;border-top:1px solid var(--line)}
+.grp{padding:10px 0 2px}
+.grp-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:6px 8px;font-size:12px;color:#9fb0d4;font-weight:600}
+.grp-h code{font-family:var(--mono);font-size:10.5px;color:#6f7c9c;font-weight:400}
+.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 8px;border-radius:10px;transition:background .15s ease}
+.row:active{background:rgba(255,255,255,.05)}
+.m{flex:0 0 auto;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.6px;
+  padding:3px 6px;border-radius:5px;min-width:44px;text-align:center}
+.m.get{color:#6ee7b7;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.30)}
+.m.post{color:#fca5a5;background:rgba(244,63,94,.13);border:1px solid rgba(244,63,94,.28)}
+.m.addr{color:#c4b5fd;background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.30)}
+.path{flex:1 1 auto;min-width:0;font-family:var(--mono);font-size:11.8px;line-height:1.5;
+  color:#9dc0ff;text-decoration:none;overflow-wrap:anywhere;word-break:break-all;
+  background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.path:hover{text-decoration:underline;text-underline-offset:2px}
+.note{flex:0 1 auto;font-size:11.5px;color:#72809f}
+
+/* ---------- Poster ---------- */
+.poster{padding:0;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--panel);line-height:0}
+.poster img{display:block;width:100%;height:auto}
+.poster-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:12px 14px;line-height:1.5;font-size:11.5px;color:#72809f}
+.poster-foot a{color:#9dc0ff;text-decoration:none}
+.poster-foot a:hover{text-decoration:underline}
+
+footer{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:space-between;align-items:center;
+  margin-top:8px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:#5f6b88}
+footer code{font-family:var(--mono);color:#6f7c9c}
+
+/* ---------- Toast ---------- */
+#toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,14px);
+  padding:10px 16px;border-radius:999px;background:rgba(20,26,42,.94);border:1px solid var(--line-2);
+  color:#dfe7fb;font-size:12.5px;box-shadow:0 12px 30px -10px rgba(0,0,0,.7);
+  opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:99;max-width:88vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:400px){
+  .grid{grid-template-columns:1fr}
+  .card code{font-size:10px}
+  .note{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="brand"><i></i>SDK-OnlineProject</span>
+    <h1>在线服务台</h1>
+    <p>入厂报备 · 访客通 · 日志 · 施工进度 —— 手机电脑同一个入口，点一下直达。</p>
+    <div class="chips">
+      <span class="chip">📱 手机友好</span>
+      <span class="chip">🧭 6 个页面</span>
+      <span class="chip clock" id="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="bar"></span><h2>功能页面</h2><em>6</em></div>
+    <div class="grid">
+
+      <a class="card" href="/FactoryEntry/Report/debug.html" style="--c:#5b8cff;--cr:91,140,255">
+        <div class="top"><span class="ico">🔧</span><span class="go">→</span></div>
+        <h3>报备调试</h3>
+        <p>表单载荷预览、底层数据核对，只看不发包</p>
+        <code>/FactoryEntry/Report/debug.html</code>
+      </a>
+
+      <a class="card" href="/FactoryEntry/Report/auto.html" style="--c:#f59e0b;--cr:245,158,11">
+        <div class="top"><span class="ico">🚀</span><span class="go">→</span></div>
+        <h3>自动续期</h3>
+        <p>续期控制台：实时日志 + 发包结果，可干跑模拟</p>
+        <code>/FactoryEntry/Report/auto.html</code>
+      </a>
+
+      <a class="card" href="/FactoryEntry/Query/visitor.html" style="--c:#22d3ee;--cr:34,211,238">
+        <div class="top"><span class="ico">👥</span><span class="go">→</span></div>
+        <h3>访客通查询</h3>
+        <p>按接待人查审批状态与在厂记录，鹏鼎 / 礼鼎切换</p>
+        <code>/FactoryEntry/Query/visitor.html</code>
+      </a>
+
+      <a class="card" href="/FactoryEntry/Log/log.html" style="--c:#a78bfa;--cr:167,139,250">
+        <div class="top"><span class="ico">📊</span><span class="go">→</span></div>
+        <h3>入厂日志</h3>
+        <p>Redis 日志检索，真实 / 模拟发包高亮标记</p>
+        <code>/FactoryEntry/Log/log.html</code>
+      </a>
+
+      <a class="card" href="/FactoryEntry/Construction/construction-schedule/a08" style="--c:#34d399;--cr:52,211,153">
+        <div class="top"><span class="ico">🏗️</span><span class="go">→</span></div>
+        <h3>A08 施工报备</h3>
+        <p>微信端施工进度文字，双击整段复制</p>
+        <code>/FactoryEntry/Construction/construction-schedule/a08</code>
+      </a>
+
+      <a class="card" href="/FactoryEntry/Construction/construction-schedule/a01" style="--c:#fb7185;--cr:251,113,133">
+        <div class="top"><span class="ico">🏗️</span><span class="go">→</span></div>
+        <h3>A01 施工报备</h3>
+        <p>同上，A01 厂区模板，双击整段复制</p>
+        <code>/FactoryEntry/Construction/construction-schedule/a01</code>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <details class="api-box">
+      <summary>🧩 接口速查 <em>19</em><span class="caret">▸</span></summary>
+      <div class="api-body">
+
+        <div class="grp">
+          <div class="grp-h">入厂报备 <code>/FactoryEntry/Report</code></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Report/config" target="_blank" rel="noopener">/config</a><span class="note">厂区列表</span></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Report/debug-content" target="_blank" rel="noopener">/debug-content</a><span class="note">底层调试数据</span></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Report/auto-renew?dryRun=1" target="_blank" rel="noopener">/auto-renew</a><span class="note">续期执行（SSE，带 dryRun=1 干跑）</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/FactoryEntry/Report/generate-payload">/generate-payload</button><span class="note">生成表单载荷</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/FactoryEntry/Report/manual-send">/manual-send</button><span class="note">手动发包</span></div>
+          <div class="row"><span class="m addr">跳转</span><a class="path" href="/FactoryEntry/Report/debug">/debug</a><span class="note">→ debug.html</span></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-h">访客查询 <code>/FactoryEntry/Query</code></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Query/visitor-config" target="_blank" rel="noopener">/visitor-config</a><span class="note">接待人名单</span></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Query/visitor-card-data" target="_blank" rel="noopener">/visitor-card-data</a><span class="note">卡片数据</span></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Query/visitor-status-Wechat" target="_blank" rel="noopener">/visitor-status-Wechat</a><span class="note">微信端纯文本</span></div>
+          <div class="row"><span class="m addr">跳转</span><a class="path" href="/FactoryEntry/Query/visitor-status">/visitor-status</a><span class="note">→ visitor.html</span></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-h">日志 <code>/FactoryEntry/Log</code></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Log/api/log-plan" target="_blank" rel="noopener">/api/log-plan</a><span class="note">日志日期分组</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/FactoryEntry/Log/api/log-batch">/api/log-batch</button><span class="note">单条日志详情</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/FactoryEntry/Log/api/clear">/api/clear</button><span class="note">清空日志</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/FactoryEntry/Log/api/delete">/api/delete</button><span class="note">删除单条</span></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-h">施工进度 <code>/FactoryEntry/Construction</code></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Construction/construction-schedule/a08" target="_blank" rel="noopener">/construction-schedule/:factory</a><span class="note">a08 / a01</span></div>
+          <div class="row"><span class="m get">GET</span><a class="path" href="/FactoryEntry/Construction/construction-copy.js" target="_blank" rel="noopener">/construction-copy.js</a><span class="note">双击复制脚本</span></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-h">其他模块</div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/YunZhongKe/">/YunZhongKe/</button><span class="note">云中客转链</span></div>
+          <div class="row"><span class="m get">GET</span><button class="path" data-copy="/CrushTool/?token=***">/CrushTool/?token=***</button><span class="note">读取配置</span></div>
+          <div class="row"><span class="m post">POST</span><button class="path" data-copy="/CrushTool/">/CrushTool/</button><span class="note">写入配置</span></div>
+        </div>
+
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="bar"></span><h2>门面</h2></div>
+    <div class="poster">
+      <img src="/sy-web.jpg" alt="sy" loading="lazy" decoding="async">
+      <div class="poster-foot"><span>原图 10368 × 5832</span><a href="/sy.jpg" target="_blank" rel="noopener">查看原图 ↗</a></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year">2026</span> SDK-OnlineProject · 内部工具</span>
+    <code>node + express</code>
+  </footer>
+
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  var clock = document.getElementById('clock');
+  function tick(){
+    var d = new Date();
+    var p = function(n){ return String(n).padStart(2,'0'); };
+    clock.textContent = p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  tick(); setInterval(tick, 1000);
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var toastEl = document.getElementById('toast'), toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
+  }
+  function copyText(text){
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function(){ toast('已复制 ' + text); }, fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select(); ta.setSelectionRange(0, ta.value.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(e){}
+      document.body.removeChild(ta);
+      toast(ok ? '已复制 ' + text : '复制失败，请长按手动复制');
+    }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      copyText(el.getAttribute('data-copy'));
+    });
+  });
+})();
+</script>
+</body>
+</html>

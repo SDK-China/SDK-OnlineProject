@@ -6,11 +6,26 @@
     <title>入厂报备调试</title>
     <link rel="stylesheet" href="/lib/css/bootstrap.min.css">
     <link rel="stylesheet" href="/FactoryEntry/assets/css/debug.css">
+    <style>
+        /* 小屏：5 个入口等分一行，字号收紧，不横向溢出 */
+        @media (max-width: 520px) {
+            .navbar { padding: .3rem 0; }
+            .navbar > .container { justify-content: stretch !important; padding-left: 6px; padding-right: 6px; }
+            .navbar .nav-pills { flex-wrap: nowrap; gap: 2px !important; width: 100%; }
+            .navbar .nav-item { flex: 1 1 0; min-width: 0; }
+            .navbar .nav-link {
+                display: flex; align-items: center; justify-content: center;
+                padding: .34rem .08rem; font-size: .78rem; line-height: 1.2;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            }
+        }
+    </style>
 </head>
 <body class="bg-light">
         <nav class="navbar navbar-expand navbar-light bg-white shadow-sm mb-4">
         <div class="container justify-content-center">
             <ul class="nav nav-pills gap-1">
+                <li class="nav-item"><a class="nav-link" href="/">🏠 首页</a></li>
                 <li class="nav-item"><a class="nav-link active" href="/FactoryEntry/Report/debug.html">🔧 报备调试</a></li>
                 <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Report/auto.html">🚀 自动续期</a></li>
                 <li class="nav-item"><a class="nav-link" href="/FactoryEntry/Query/visitor.html">👥 访客通</a></li>

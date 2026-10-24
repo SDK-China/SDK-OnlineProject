@@ -34,28 +34,21 @@ app.use('/YunZhongKe', require('./src/YunZhongKe/routes/YunZhongKe'));   // 云�
 // 配置工具大类
 app.use('/CrushTool', require('./src/CrushTool/routes/CrushTool'));      // 配置开关
 
-// --- 根路由测试 (可选) ---
+// --- 首页：导航台（页面按 view/home/index.html 渲染，见 src/home/index.html） ---
 app.get('/', (req, res) => {
-    // 主人，这里我们改用发送一段简单的 HTML 代码，并把图片放进去
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>首页</title>
-        </head>
-        <body>
-            <p>🚀🚀🚀YunZhongKe Server is running.🚀🚀🚀</p>
-            <img src="/sy.jpg" alt="sy" style="max-width: 100%;" />
-        </body>
-        </html>
-    `);
+    res.sendFile(path.join(__dirname, 'src/home/index.html'));
 });
 
 // [新增] 处理首页图片的静态路由
 app.get('/sy.jpg', (req, res) => {
     // 准确读取您项目根目录下的 sy.jpg 文件
     res.sendFile(path.join(__dirname, 'sy.jpg'));
+});
+
+// 首页展示用的压缩版图片（原图 18MB / 10368×5832，手机加载太慢，这里给 1600px 的版本）
+app.get('/sy-web.jpg', (req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=604800');
+    res.sendFile(path.join(__dirname, 'sy-web.jpg'));
 });
 
 // --- 静态文件处理 ---
