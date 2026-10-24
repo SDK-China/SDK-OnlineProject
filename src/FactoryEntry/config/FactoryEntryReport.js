@@ -719,7 +719,7 @@ const LOC_CONFIGS = {
 
         query: {
             visitorIdNos: [
-                "MTMwMzIzMTk5MjEyMTY2NDM0",  //张江路
+                // "MTMwMzIzMTk5MjEyMTY2NDM0",  //张江路
                 // "MTMwMzIzMTk5ODA2MTQxMDU4", //刘宏飞
                 // "MTMwMzIzMTk5MDAzMDc2NDE2", //张江宽
                 // "MTMwMzIzMTk4OTA5MDQ2NDEx", //付海超
@@ -740,12 +740,12 @@ const LOC_CONFIGS = {
                 // "MDcyMjg1Nzc=", //朱会民 (新)
                 // "NTMyNDY5ODc0" //Denis Gerassimenko
                 // "NDIyMzI2MTk5NTA0Mjg2NDEx", //竇桂陽
-                "MTMwMzIzMjAwMzEyMDc1NjE1",  //周家豪
+                // "MTMwMzIzMjAwMzEyMDc1NjE1",  //周家豪
                 // "MTE2ODkyOTE="   // 👇 🌟新增：张建成
                 "MTMwNjM0MTk5OTEyMjAwMDEw",  // 张鑫达
                 // "MTMwMzIxMTk5NjExMDk5MDM3",  // 董建岐
                 // "NDQwMTgxMTk5ODA4MTczMDE2",   // 梁梓杰
-                "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
+                // "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
                 // "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
                 "MTMwNTI5MjAwMTA4MjU0OTE0",   //贾宇浩
             ],
