@@ -671,7 +671,7 @@ const LOC_CONFIGS = {
                 keepNormal: true
             }, 
             // 殷光耀
-            "NDEwMjI0MjAwNDExMDUyMzEw": {
+            "MzMwNDgyMTk5MzA3MDUyNDMy": {
                 // receptionistId: "A2449801", // 龚旭明
                 // receptionistId: "A2319601", // 赵海富
                 // receptionistId: "A2451885", // 张凯
