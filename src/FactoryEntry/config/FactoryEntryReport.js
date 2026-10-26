@@ -308,6 +308,35 @@ const PERSON_DB = {
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osk", "label": "社保/在职证明", "fieldData": { "value": [{ "name": "Screenshot_20260909_211651.jpg", "previewUrl": "/o/PZA668C14I29RFV3NFMJK6GJT6A93Z22R4UTMA1?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_UFpBNjY4QzE0STI5UkZWM05GTUpLNkdKVDZBOTNaMjJSNFVUTTkx.jpg&instId=&type=open&process=image/resize,m_fill,w_200,h_200,limit_0/quality,q_80", "downloadUrl": "/o/PZA668C14I29RFV3NFMJK6GJT6A93Z22R4UTMA1?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_UFpBNjY4QzE0STI5UkZWM05GTUpLNkdKVDZBOTNaMjJSNFVUTTkx.jpg&instId=&type=download", "size": 254093, "url": "/o/PZA668C14I29RFV3NFMJK6GJT6A93Z22R4UTMA1?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_UFpBNjY4QzE0STI5UkZWM05GTUpLNkdKVDZBOTNaMjJSNFVUTTkx.jpg&instId=&type=download", "fileUuid": "APP_GRVPTEOQ6D4B7FLZFYNJ_UFpBNjY4QzE0STI5UkZWM05GTUpLNkdKVDZBOTNaMjJSNFVUTTkx.jpg" }] } },
         { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
     ],
+    // =========================================================
+    // 🌟 2026-10-26 新增：殷光耀 (QA01 李泊绪专单)
+    // =========================================================
+    "MzMwNDgyMTk5MzA3MDUyNDMy": [
+        { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0", "status": "active" }] },
+        { "componentName": "TextField", "fieldId": "textField_lxv44ory", "label": "证件号码", "fieldData": { "value": decode("MzMwNDgyMTk5MzA3MDUyNDMy") } },
+        { "componentName": "TextField", "fieldId": "textField_lxv44orw", "label": "姓名", "fieldData": { "value": "殷光耀" } }, // 🛡️ 纯正汉字防乱码
+        { "componentName": "SelectField", "fieldId": "selectField_mbyjhot6", "label": "区号", "fieldData": { "value": "86", "text": "+86" }, "options": [{ "defaultChecked": true, "syncLabelValue": false, "__sid": "item_megqe4lm", "text": "+86", "__sid__": "serial_megqe4ll", "value": "86", "sid": "serial_mbyjf8gm" }] },
+        { "componentName": "TextField", "fieldId": "textField_lxv44orz", "label": "联系方式", "fieldData": { "value": decode("MTUwMjQzMTY3MDg=") } },
+        { "componentName": "ImageField", "fieldId": "imageField_ly9i5k5q", "label": "免冠照片", "fieldData": { "value": [{ "name": "1000901504.jpg", "previewUrl": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/872783a1cb62d56ae98068ef70c08239.jpg", "downloadUrl": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/872783a1cb62d56ae98068ef70c08239.jpg", "size": 221179, "url": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/872783a1cb62d56ae98068ef70c08239.jpg" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osj", "label": "证件照片", "fieldData": { "value": [{ "name": "mmexport1793028632943.jpg", "previewUrl": "/o/9K966171Y0EA6WIPI1H6MD4X70XC3OV04FPVMV2?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_OUs5NjYxNzFZMEVBNldJUEkxSDZNRDRYNzBYQzNPVjA0RlBWTVUy.jpg&instId=&type=open&process=image/resize,m_fill,w_200,h_200,limit_0/quality,q_80", "downloadUrl": "/o/9K966171Y0EA6WIPI1H6MD4X70XC3OV04FPVMV2?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_OUs5NjYxNzFZMEVBNldJUEkxSDZNRDRYNzBYQzNPVjA0RlBWTVUy.jpg&instId=&type=download", "size": 3368406, "url": "/o/9K966171Y0EA6WIPI1H6MD4X70XC3OV04FPVMV2?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_OUs5NjYxNzFZMEVBNldJUEkxSDZNRDRYNzBYQzNPVjA0RlBWTVUy.jpg&instId=&type=download", "fileUuid": "APP_GRVPTEOQ6D4B7FLZFYNJ_OUs5NjYxNzFZMEVBNldJUEkxSDZNRDRYNzBYQzNPVjA0RlBWTVUy.jpg" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osk", "label": "社保/在职证明", "fieldData": { "value": [{ "name": "在职证明 - 殷光耀，李超.pdf", "previewUrl": "/dingtalk/mobile/APP_GRVPTEOQ6D4B7FLZFYNJ/inst/preview?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_S0tDNjZTODFOTUVBM1ZOQUtZOEUzQlg4N1JaUTI1TFg0RlBWTU8%24.pdf&fileSize=41901&downloadUrl=APP_GRVPTEOQ6D4B7FLZFYNJ_S0tDNjZTODFOTUVBM1ZOQUtZOEUzQlg4N1JaUTI1TFg0RlBWTU8$.pdf", "downloadUrl": "/o/KKC66S81NMEA3VNAKY8E3BX87RZQ26LX4FPVMP?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_S0tDNjZTODFOTUVBM1ZOQUtZOEUzQlg4N1JaUTI1TFg0RlBWTU8$.pdf&instId=&type=download", "size": 41901, "url": "/o/KKC66S81NMEA3VNAKY8E3BX87RZQ26LX4FPVMP?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_S0tDNjZTODFOTUVBM1ZOQUtZOEUzQlg4N1JaUTI1TFg0RlBWTU8$.pdf&instId=&type=download", "fileUuid": "APP_GRVPTEOQ6D4B7FLZFYNJ_S0tDNjZTODFOTUVBM1ZOQUtZOEUzQlg4N1JaUTI1TFg0RlBWTU8$.pdf" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
+    ],
+
+    // =========================================================
+    // 🌟 2026-10-26 新增：李超 (QA01 李泊绪专单)
+    // =========================================================
+    "MzMwNDgyMTk5NDA0MTcyNzE5": [
+        { "componentName": "SelectField", "fieldId": "selectField_lxv44orx", "label": "有效身份证件", "fieldData": { "value": "身份证", "text": "身份证" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lxjzgsg1", "text": "身份证", "__sid__": "serial_lxjzgsg0", "value": "身份证", "sid": "serial_lxjzgsg0", "status": "active" }] },
+        { "componentName": "TextField", "fieldId": "textField_lxv44ory", "label": "证件号码", "fieldData": { "value": decode("MzMwNDgyMTk5NDA0MTcyNzE5") } },
+        { "componentName": "TextField", "fieldId": "textField_lxv44orw", "label": "姓名", "fieldData": { "value": "李超" } }, // 🛡️ 纯正汉字防乱码
+        { "componentName": "SelectField", "fieldId": "selectField_mbyjhot6", "label": "区号", "fieldData": { "value": "86", "text": "+86" }, "options": [{ "defaultChecked": true, "syncLabelValue": false, "__sid": "item_megqe4lm", "text": "+86", "__sid__": "serial_megqe4ll", "value": "86", "sid": "serial_mbyjf8gm" }] },
+        { "componentName": "TextField", "fieldId": "textField_lxv44orz", "label": "联系方式", "fieldData": { "value": decode("MTUxNTc0MTg2OTk=") } },
+        { "componentName": "ImageField", "fieldId": "imageField_ly9i5k5q", "label": "免冠照片", "fieldData": { "value": [{ "name": "1000901510.jpg", "previewUrl": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/8570088e74365710018d94bf58d7998c.jpg", "downloadUrl": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/8570088e74365710018d94bf58d7998c.jpg", "size": 179722, "url": "https://dingtalk.avaryholding.com:8443/dingplus/image/20261026/8570088e74365710018d94bf58d7998c.jpg" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osj", "label": "证件照片", "fieldData": { "value": [{ "name": "mmexport1793028813979.jpg", "previewUrl": "/o/H0G66E81F6EA86KJPJ1YS58HU4VB2U2G6FPVM72?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_SDBHNjZFODFGNkVBODZLSlBKMVlTNThIVTRWQjJVMkc2RlBWTTYy.jpg&instId=&type=open&process=image/resize,m_fill,w_200,h_200,limit_0/quality,q_80", "downloadUrl": "/o/H0G66E81F6EA86KJPJ1YS58HU4VB2U2G6FPVM72?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_SDBHNjZFODFGNkVBODZLSlBKMVlTNThIVTRWQjJVMkc2RlBWTTYy.jpg&instId=&type=download", "size": 934904, "url": "/o/H0G66E81F6EA86KJPJ1YS58HU4VB2U2G6FPVM72?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_SDBHNjZFODFGNkVBODZLSlBKMVlTNThIVTRWQjJVMkc2RlBWTTYy.jpg&instId=&type=download", "fileUuid": "APP_GRVPTEOQ6D4B7FLZFYNJ_SDBHNjZFODFGNkVBODZLSlBKMVlTNThIVTRWQjJVMkc2RlBWTTYy.jpg" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osk", "label": "社保/在职证明", "fieldData": { "value": [{ "name": "在职证明 - 殷光耀，李超.pdf", "previewUrl": "/dingtalk/mobile/APP_GRVPTEOQ6D4B7FLZFYNJ/inst/preview?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_R0M5NjZBODFaRkRBME8zV0lJRUlTRDYzR1A0UDMzNE42RlBWTUVB.pdf&fileSize=41901&downloadUrl=APP_GRVPTEOQ6D4B7FLZFYNJ_R0M5NjZBODFaRkRBME8zV0lJRUlTRDYzR1A0UDMzNE42RlBWTUVB.pdf", "downloadUrl": "/o/GC966A81ZFDA0O3WIIEISD63GP4P334N6FPVMFA?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_R0M5NjZBODFaRkRBME8zV0lJRUlTRDYzR1A0UDMzNE42RlBWTUVB.pdf&instId=&type=download", "size": 41901, "url": "/o/GC966A81ZFDA0O3WIIEISD63GP4P334N6FPVMFA?appType=APP_GRVPTEOQ6D4B7FLZFYNJ&fileName=APP_GRVPTEOQ6D4B7FLZFYNJ_R0M5NjZBODFaRkRBME8zV0lJRUlTRDYzR1A0UDMzNE42RlBWTUVB.pdf&instId=&type=download", "fileUuid": "APP_GRVPTEOQ6D4B7FLZFYNJ_R0M5NjZBODFaRkRBME8zV0lJRUlTRDYzR1A0UDMzNE42RlBWTUVB.pdf" }] } },
+        { "componentName": "AttachmentField", "fieldId": "attachmentField_lxv44osn", "label": "其他附件", "fieldData": { "value": [] } }
+    ],
 };
 
 
@@ -451,7 +480,9 @@ const LOC_CONFIGS = {
                 // "NDExMzI0MjAwMzEyMjUyNDFY", //韩于克
                 "MjMxMTgxMTk5NTA0MjAxNTE4", //张春岩
                 "MjMxMTgxMTk5NjA5MTgxODMy", //常健
-                "NDEwMjI0MjAwNDExMDUyMzEw"  //梁蕴
+                "NDEwMjI0MjAwNDExMDUyMzEw",  //梁蕴
+                "MzMwNDgyMTk5MzA3MDUyNDMy",  //殷光耀
+                "MzMwNDgyMTk5NDA0MTcyNzE5",  //李超
             ],
             regPerson: "17614625112",
             acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F",
@@ -748,6 +779,7 @@ const LOC_CONFIGS = {
                 // "MTMwMzIzMjAwNDA5MTc1NjEy",   // 杜卫华
                 // "MjExNDAyMTk5MTAzMjkxODEy",    // 王石磊
                 "MTMwNTI5MjAwMTA4MjU0OTE0",   //贾宇浩
+                "MTMwNTM0MjAwMzA1MDgwNzE1"    // 郑子奇
             ],
             regPerson: "15032325162",
             acToken: "53F44A99C6D8AADE22942CD9E1D803E8812FF4A4A8A756BE0A1659704557309F",
