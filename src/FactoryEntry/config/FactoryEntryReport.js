@@ -670,6 +670,22 @@ const LOC_CONFIGS = {
                 receptionistId: "61908845",   // 李泊绪
                 keepNormal: true
             }, 
+            // 殷光耀
+            "NDEwMjI0MjAwNDExMDUyMzEw": {
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: false
+            }, 
+            // 李超
+            "MzMwNDgyMTk5NDA0MTcyNzE5": {
+                // receptionistId: "A2449801", // 龚旭明
+                // receptionistId: "A2319601", // 赵海富
+                // receptionistId: "A2451885", // 张凯
+                receptionistId: "61908845",   // 李泊绪
+                keepNormal: false
+            }, 
         },
         // 鹏鼎(PengDing) 的独立老组包逻辑 (已加入指定接待人合并支持)
         buildPayload: (idsBase64, targetTs, locConfig, customConfig = null) => {
