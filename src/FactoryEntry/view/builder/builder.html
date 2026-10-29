@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人员配置生成器</title>
+    <link rel="stylesheet" href="/lib/css/bootstrap.min.css">
+    <style>
+        :root { --ink: #1f2937; --muted: #6b7280; --line: #e5e7eb; --brand: #2563eb; --ok: #059669; --err: #dc2626; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; background: #f5f7fb; color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            -webkit-text-size-adjust: 100%;
+        }
+        .wrap { max-width: 880px; margin: 0 auto; padding: 16px 14px 60px; }
+
+        .topbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 4px 0 14px; }
+        .btn-home {
+            display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 10px;
+            background: #fff; border: 1px solid var(--line); color: var(--ink); text-decoration: none;
+            font-size: 14px; white-space: nowrap;
+        }
+        .btn-home:hover { border-color: #c7d2fe; color: var(--brand); }
+        .ttl { font-size: 19px; font-weight: 700; letter-spacing: .3px; }
+        .sub { font-size: 13px; color: var(--muted); width: 100%; margin-top: -4px; }
+
+        .safe {
+            background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;
+            border-radius: 12px; padding: 11px 14px; font-size: 13.5px; line-height: 1.6; margin-bottom: 16px;
+        }
+
+        .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        .card-h { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+        @media (max-width: 620px) { .grid2 { grid-template-columns: 1fr; } }
+        .fld { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .fld > span { font-size: 13px; color: var(--muted); }
+        .req { color: var(--err); }
+        .fld input, .fld select {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px;
+            font-size: 14px; color: var(--ink); background: #fbfcfe; outline: none;
+        }
+        .fld input:focus, .fld select:focus { border-color: var(--brand); background: #fff; }
+        .hint { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+
+        .drop { border: 1.5px dashed #cbd5e1; border-radius: 12px; padding: 12px; background: #fbfcfe; }
+        .drop:active { background: #f1f5ff; }
+        .drop-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .drop-t { font-size: 13.5px; font-weight: 600; }
+        .drop-t small { font-weight: 400; color: var(--muted); margin-left: 6px; }
+        .pick {
+            border: 1px solid #c7d2fe; background: #eef2ff; color: var(--brand);
+            border-radius: 9px; padding: 6px 12px; font-size: 13px; white-space: nowrap; cursor: pointer;
+        }
+        .pick:disabled { opacity: .5; cursor: not-allowed; }
+        .files { display: flex; flex-direction: column; gap: 6px; }
+        .file-row {
+            display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+            background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px;
+        }
+        .file-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-size { color: var(--muted); flex: none; }
+        .st-ok { color: var(--ok); flex: none; }
+        .st-err { color: var(--err); flex: none; }
+        .st-wait { color: #b45309; flex: none; }
+        .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; }
+        .del:hover { color: var(--err); }
+
+        .btn-gen {
+            width: 100%; border: 0; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 700;
+            color: #fff; background: linear-gradient(135deg, #2563eb, #4f46e5); cursor: pointer;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, .25);
+        }
+        .btn-gen:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+
+        .out-h { display: flex; justify-content: space-between; align-items: center; }
+        .btn-copy {
+            border: 1px solid #c7d2fe; background: #eef2ff; color: var(--brand);
+            border-radius: 9px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+        }
+        pre#codeBox {
+            margin: 0; padding: 14px; background: #0f172a; color: #e2e8f0; border-radius: 10px;
+            font-size: 12px; line-height: 1.65; overflow: auto; max-height: 460px;
+            font-family: Consolas, "Courier New", monospace; white-space: pre; tab-size: 4;
+        }
+        /* 手机：代码块改为自动换行，比左右拖动更好读（复制取的是 textContent，不受影响） */
+        @media (max-width: 620px) {
+            /* 选择器要压过后面的 .vline 规则，否则会被 white-space:pre 顶掉 */
+            pre#codeBox, .snippet pre.vline { white-space: pre-wrap; word-break: break-all; }
+        }
+
+        /* 可单独复制的片段：PERSON_DB 键 / visitorIdNos / 接待人配置 */
+        .snippet { margin-top: 12px; }
+        .snip-h {
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--muted); margin-bottom: 6px;
+        }
+        .btn-copy.sm { padding: 4px 10px; font-size: 12.5px; white-space: nowrap; }
+        pre.vline {
+            margin: 0; padding: 10px 12px; background: #0f172a; color: #e2e8f0; border-radius: 9px;
+            font-size: 12px; line-height: 1.6; overflow: auto; white-space: pre;
+            font-family: Consolas, "Courier New", monospace; tab-size: 4;
+        }
+
+        .fld.wide { grid-column: 1 / -1; }
+        .opt { color: #b45309; font-weight: 600; font-size: 12px; margin-left: 4px; }
+        .rec-hit { margin-top: 12px; }
+        .rec-line { font-size: 13px; line-height: 1.6; padding: 9px 11px; border-radius: 10px; }
+        .rec-line.ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+        .rec-line.bad { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; margin-top: 12px; }
+        .toast {
+            position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+            background: rgba(17, 24, 39, .93); color: #fff; padding: 10px 18px; border-radius: 10px;
+            font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .22s; z-index: 99;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="topbar">
+        <a class="btn-home" href="/">🏠 返回首页</a>
+        <div class="ttl">🪪 人员配置生成器</div>
+        <div class="sub">录入资料 + 上传证件 → 自动生成 PERSON_DB 配置代码（无需再抓包解码）</div>
+    </div>
+
+    <div class="safe">
+        🔒 本工具只做「文件上传」「工号查询」和「代码生成」，<b>不会向服务器提交任何申请</b>；
+        表单的提交接口全程未被调用，不会产生新的访客单据。
+    </div>
+
+    <div class="card">
+        <div class="card-h">① 人员资料</div>
+        <div class="grid2">
+            <label class="fld">
+                <span>姓名 <b class="req">*</b></span>
+                <input id="name" type="text" placeholder="如：李超" autocomplete="off">
+            </label>
+            <label class="fld">
+                <span>有效身份证件 <b class="req">*</b></span>
+                <select id="idType"></select>
+            </label>
+            <label class="fld">
+                <span>证件号码 <b class="req">*</b></span>
+                <input id="idNo" type="text" placeholder="身份证号 / 护照号 / 台胞证号" autocomplete="off">
+            </label>
+            <label class="fld">
+                <span>联系方式 <b class="req">*</b></span>
+                <input id="phone" type="text" placeholder="手机号" autocomplete="off">
+            </label>
+            <label class="fld wide">
+                <span>接待人工号 <span class="opt">选填</span></span>
+                <input id="recId" type="text" placeholder="如 A2449801 或 61990414，填了自动带出姓名 / 部门 / 手机号" autocomplete="off">
+            </label>
+        </div>
+
+        <div class="rec-hit" id="recHit" style="display:none;">
+            <div class="rec-line" id="recLine"></div>
+            <div class="snippet" id="recSnip" style="display:none;">
+                <div class="snip-h">
+                    <span>接待人配置（整块粘进 LOC_CONFIGS 的 receptionists）</span>
+                    <button type="button" class="btn-copy sm" data-copy-for="recCode">复制</button>
+                </div>
+                <pre class="vline" id="recCode"></pre>
+            </div>
+        </div>
+
+        <div class="hint">
+            区号固定为 +86（与现有全部人员配置一致）。证件号码会自动转成 Base64 并写成 decode("...")。<br>
+            接待人工号选填：填了会直接把工号发给公司服务器查（就是访客表单里「接待人工号」失焦那一刻发的同一个请求），
+            姓名 / 部门 / 手机号自动带出；事由与续签参数服务器不给，配置里有人就用配置的，没有就默认「设备维护与保养 / 剩 2 天续 7 天」。
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-h">② 证件文件</div>
+        <div class="grid2" id="dropWrap"></div>
+        <div class="hint">
+            免冠照片由浏览器直传钉钉图片服务；其余附件经本服务器中转（Vercel 部署时单个文件需 ≤ 4.5MB，本地运行不受限）。
+        </div>
+    </div>
+
+    <button id="genBtn" class="btn-gen">⚙️ 生成配置代码</button>
+
+    <div class="card" id="outCard" style="display:none; margin-top:14px;">
+        <div class="card-h out-h">
+            <span>③ 生成的配置代码</span>
+            <button class="btn-copy" id="copyBtn">复制代码</button>
+        </div>
+        <pre id="codeBox"></pre>
+        <div class="warn" id="warnBox" style="display:none;"></div>
+
+        <div class="snippet" id="outRecSnip" style="display:none;">
+            <div class="snip-h">
+                <span>接待人配置（同上）</span>
+                <button type="button" class="btn-copy sm" data-copy-for="outRec">复制</button>
+            </div>
+            <pre class="vline" id="outRec"></pre>
+        </div>
+
+        <div class="snippet">
+            <div class="snip-h">
+                <span>PERSON_DB 的键（= 证件号 Base64）</span>
+                <button type="button" class="btn-copy sm" data-copy-for="outKey">复制键</button>
+            </div>
+            <pre class="vline" id="outKey"></pre>
+        </div>
+
+        <div class="snippet">
+            <div class="snip-h">
+                <span>访客通监控：LOC_CONFIGS.query.visitorIdNos 里加一行</span>
+                <button type="button" class="btn-copy sm" data-copy-for="outVisitor">复制这一行</button>
+            </div>
+            <pre class="vline" id="outVisitor"></pre>
+        </div>
+    </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+    var state = {
+        idTypes: [],
+        imageServiceUrl: "https://dingtalk.avaryholding.com:8443/dingplus/image/uploadFile",
+        files: { photo: [], idCardPhoto: [], socialProof: [], otherFiles: [] },
+        rec: null,          // 已查到的接待人信息
+        recSeq: 0,          // 查询序号，防止慢响应覆盖新输入
+        busy: false
+    };
+
+    var SLOTS = [
+        { key: "photo", label: "免冠照片", tip: "1 张，jpg/png", accept: "image/*", multiple: false, kind: "image" },
+        { key: "idCardPhoto", label: "证件照片", tip: "身份证/护照照片", accept: "image/*,.pdf", multiple: true, kind: "attach" },
+        { key: "socialProof", label: "社保/在职证明", tip: "jpg / pdf", accept: "image/*,.pdf", multiple: true, kind: "attach" },
+        { key: "otherFiles", label: "其他附件", tip: "可选，多选", accept: "*/*", multiple: true, kind: "attach" }
+    ];
+
+    var el = function (id) { return document.getElementById(id); };
+
+    function toast(msg) {
+        var t = el("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._timer);
+        t._timer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+    }
+
+    function human(bytes) {
+        if (!bytes) return "0 B";
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
+        return (bytes / 1048576).toFixed(1) + " MB";
+    }
+
+    // ---------- 渲染文件槽位 ----------
+    function renderSlots() {
+        var wrap = el("dropWrap");
+        wrap.innerHTML = "";
+        SLOTS.forEach(function (slot) {
+            var box = document.createElement("div");
+            box.className = "drop";
+
+            var head = document.createElement("div");
+            head.className = "drop-h";
+
+            var title = document.createElement("div");
+            title.className = "drop-t";
+            title.textContent = slot.label;
+            var small = document.createElement("small");
+            small.textContent = slot.tip;
+            title.appendChild(small);
+
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "pick";
+            btn.textContent = "选择文件";
+            var input = document.createElement("input");
+            input.type = "file";
+            input.style.display = "none";
+            input.accept = slot.accept;
+            if (slot.multiple) input.multiple = true;
+            btn.addEventListener("click", function () { input.click(); });
+            input.addEventListener("change", function () {
+                handlePick(slot, Array.prototype.slice.call(input.files || []));
+                input.value = "";
+            });
+
+            head.appendChild(title);
+            head.appendChild(btn);
+            head.appendChild(input);
+
+            var list = document.createElement("div");
+            list.className = "files";
+            list.id = "list_" + slot.key;
+
+            box.appendChild(head);
+            box.appendChild(list);
+            wrap.appendChild(box);
+        });
+        SLOTS.forEach(function (s) { renderFileList(s.key); });
+    }
+
+    function renderFileList(key) {
+        var list = el("list_" + key);
+        if (!list) return;
+        list.innerHTML = "";
+        var arr = state.files[key] || [];
+        if (!arr.length) return;
+        arr.forEach(function (f, idx) {
+            var row = document.createElement("div");
+            row.className = "file-row";
+
+            var nm = document.createElement("span");
+            nm.className = "file-name";
+            nm.textContent = f.name;
+
+            var sz = document.createElement("span");
+            sz.className = "file-size";
+            sz.textContent = human(f.size);
+
+            var st = document.createElement("span");
+            if (f.status === "ok") { st.className = "st-ok"; st.textContent = "✅ 已上传"; }
+            else if (f.status === "err") { st.className = "st-err"; st.textContent = "❌ " + (f.errorMsg || "失败"); }
+            else { st.className = "st-wait"; st.textContent = "⏳ 上传中"; }
+
+            row.appendChild(nm);
+            row.appendChild(sz);
+            row.appendChild(st);
+
+            if (f.status !== "wait") {
+                var del = document.createElement("button");
+                del.className = "del";
+                del.textContent = "✕";
+                del.title = "移除";
+                del.addEventListener("click", function () {
+                    state.files[key].splice(idx, 1);
+                    renderFileList(key);
+                });
+                row.appendChild(del);
+            }
+            list.appendChild(row);
+        });
+    }
+
+    function addPlaceholder(key, file) {
+        var rec = { name: file.name, size: file.size, status: "wait" };
+        state.files[key].push(rec);
+        renderFileList(key);
+        return rec;
+    }
+
+    // ---------- 上传 ----------
+    function uploadImage(file) {
+        var fd = new FormData();
+        fd.append("file", file);
+        return fetch(state.imageServiceUrl, { method: "POST", body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+                if (!j || String(j.success) !== "true" || !j.content) {
+                    throw new Error((j && j.errorMsg) || "图片服务返回异常");
+                }
+                return {
+                    name: file.name, size: file.size,
+                    imgURL: j.content.imgURL, downloadURL: j.content.downloadURL, url: j.content.url
+                };
+            });
+    }
+
+    function uploadAttach(file) {
+        var url = "/FactoryEntry/Builder/attach?name=" + encodeURIComponent(file.name)
+            + "&type=" + encodeURIComponent(file.type || "application/octet-stream");
+        return fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/octet-stream" },
+            body: file
+        }).then(function (r) { return r.json(); }).then(function (j) {
+            if (!j || !j.ok) throw new Error((j && j.msg) || "上传失败");
+            return j.item;
+        });
+    }
+
+    function handlePick(slot, files) {
+        if (!files.length) return;
+        if (!slot.multiple) { state.files[slot.key] = []; }
+        files.forEach(function (file) {
+            var rec = addPlaceholder(slot.key, file);
+            var task = slot.kind === "image" ? uploadImage(file) : uploadAttach(file);
+            task.then(function (item) {
+                rec.status = "ok";
+                rec.item = item;
+                renderFileList(slot.key);
+            }).catch(function (e) {
+                rec.status = "err";
+                rec.errorMsg = e.message;
+                renderFileList(slot.key);
+            });
+        });
+    }
+
+    // ---------- 生成 ----------
+    function itemsOf(key) {
+        return (state.files[key] || []).filter(function (f) { return f.status === "ok" && f.item; })
+            .map(function (f) { return f.item; });
+    }
+
+    function pendingCount() {
+        var n = 0;
+        Object.keys(state.files).forEach(function (k) {
+            (state.files[k] || []).forEach(function (f) { if (f.status === "wait") n++; });
+        });
+        return n;
+    }
+
+    function generate() {
+        if (state.busy) return;
+        if (pendingCount() > 0) { toast("还有文件正在上传，请稍候"); return; }
+
+        var payload = {
+            name: el("name").value.trim(),
+            idType: el("idType").value,
+            idNo: el("idNo").value.trim(),
+            phone: el("phone").value.trim(),
+            receptionistId: el("recId").value.trim(),
+            photo: itemsOf("photo"),
+            idCardPhoto: itemsOf("idCardPhoto"),
+            socialProof: itemsOf("socialProof"),
+            otherFiles: itemsOf("otherFiles")
+        };
+
+        if (!payload.name) { toast("请填写姓名"); el("name").focus(); return; }
+        if (!payload.idNo) { toast("请填写证件号码"); el("idNo").focus(); return; }
+        if (!payload.phone) { toast("请填写联系方式"); el("phone").focus(); return; }
+
+        state.busy = true;
+        el("genBtn").disabled = true;
+        el("genBtn").textContent = "生成中…";
+
+        fetch("/FactoryEntry/Builder/build", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        }).then(function (r) { return r.json(); }).then(function (j) {
+            if (!j.ok) throw new Error(j.msg || "生成失败");
+            el("codeBox").textContent = j.code;
+            el("outCard").style.display = "block";
+
+            var warn = el("warnBox");
+            if (j.warnings && j.warnings.length) {
+                warn.style.display = "block";
+                warn.textContent = "⚠️ " + j.warnings.join("；");
+            } else {
+                warn.style.display = "none";
+            }
+
+            el("outKey").textContent = j.key || "";
+            el("outVisitor").textContent = j.visitorLine || "";
+
+            if (j.receptionistCode) {
+                el("outRec").textContent = j.receptionistCode;
+                el("outRecSnip").style.display = "block";
+            } else {
+                el("outRecSnip").style.display = "none";
+            }
+
+            el("outCard").scrollIntoView({ behavior: "smooth", block: "start" });
+            toast("已生成，点「复制代码」粘贴到配置里");
+        }).catch(function (e) {
+            toast(e.message);
+        }).then(function () {
+            state.busy = false;
+            el("genBtn").disabled = false;
+            el("genBtn").textContent = "⚙️ 生成配置代码";
+        });
+    }
+
+    // ---------- 复制（代码块 / 各片段共用一套） ----------
+    function copyText(txt, okMsg) {
+        txt = txt || "";
+        if (!txt) { toast("还没有可复制的内容"); return; }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt).then(function () { toast(okMsg || "已复制"); })
+                .catch(function () { fallbackCopy(txt, okMsg); });
+        } else {
+            fallbackCopy(txt, okMsg);
+        }
+    }
+
+    function fallbackCopy(txt, okMsg) {
+        var ta = document.createElement("textarea");
+        ta.value = txt;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); toast(okMsg || "已复制"); } catch (e) { toast("复制失败，请手动选择"); }
+        document.body.removeChild(ta);
+    }
+
+    function copyCode() { copyText(el("codeBox").textContent, "已复制配置代码"); }
+
+    // 所有带 data-copy-for="某个 id" 的按钮：复制对应 <pre> 的文本
+    document.addEventListener("click", function (e) {
+        var btn = e.target && e.target.closest ? e.target.closest("[data-copy-for]") : null;
+        if (!btn) return;
+        var pre = el(btn.getAttribute("data-copy-for"));
+        if (pre) copyText(pre.textContent, "已复制");
+    });
+
+    // ---------- 接待人工号：边填边查 ----------
+    var recTimer = null;
+
+    function showRecLine(text, cls) {
+        el("recHit").style.display = "block";
+        el("recLine").className = "rec-line " + cls;
+        el("recLine").textContent = text;
+    }
+
+    function lookupRec() {
+        var id = el("recId").value.trim();
+        var seq = ++state.recSeq;
+
+        if (!id) {
+            state.rec = null;
+            el("recHit").style.display = "none";
+            el("recSnip").style.display = "none";
+            return;
+        }
+
+        fetch("/FactoryEntry/Builder/receptionist?id=" + encodeURIComponent(id))
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+                if (seq !== state.recSeq) return;   // 有更新的输入，丢弃这次结果
+                if (!j.ok) throw new Error(j.msg || "查询失败");
+                if (!j.found) {
+                    state.rec = null;
+                    el("recSnip").style.display = "none";
+                    showRecLine("❌ 没查到工号 " + id + "（公司员工信息里没有这个人，检查一下工号）", "bad");
+                    return;
+                }
+                state.rec = j.info;
+
+                // 姓名 / 部门 / 手机号可能有个别为空，只拼有值的
+                var head = [j.info.receptionistName, j.info.receptionDepartment, j.info.receptionistPhone]
+                    .filter(function (v) { return v; });
+                var tail = [];
+                var site = j.info.locTitle || j.info.loc || j.info.site;
+                if (site) tail.push(site);
+                if (j.info.visitReason) tail.push("事由：" + j.info.visitReason);
+                if (j.source === "local") tail.push("服务器没查到，用的本地配置");
+                else if (j.inLocal) tail.push("会覆盖原有配置");
+                showRecLine("✅ " + head.join(" · ") + (tail.length ? "（" + tail.join(" · ") + "）" : ""), "ok");
+                el("recCode").textContent = j.code || "";
+                el("recSnip").style.display = "block";
+            })
+            .catch(function (e) {
+                if (seq !== state.recSeq) return;
+                state.rec = null;
+                el("recSnip").style.display = "none";
+                showRecLine("❌ " + e.message, "bad");
+            });
+    }
+
+    function scheduleRec() {
+        clearTimeout(recTimer);
+        recTimer = setTimeout(lookupRec, 300);
+    }
+
+    // ---------- 初始化 ----------
+    fetch("/FactoryEntry/Builder/config").then(function (r) { return r.json(); }).then(function (j) {
+        state.idTypes = j.idTypes || ["身份证"];
+        if (j.imageServiceUrl) state.imageServiceUrl = j.imageServiceUrl;
+        var sel = el("idType");
+        sel.innerHTML = "";
+        state.idTypes.forEach(function (t) {
+            var o = document.createElement("option");
+            o.value = t;
+            o.textContent = t;
+            sel.appendChild(o);
+        });
+    }).catch(function () {
+        el("idType").innerHTML = '<option value="身份证">身份证</option>';
+    });
+
+    renderSlots();
+    el("genBtn").addEventListener("click", generate);
+    el("copyBtn").addEventListener("click", copyCode);
+    el("recId").addEventListener("input", scheduleRec);
+    el("recId").addEventListener("blur", lookupRec);
+})();
+</script>
+</body>
+</html>

@@ -19,6 +19,7 @@ app.use('/FactoryEntry/Report', express.static(path.join(__dirname, 'src/Factory
 app.use('/FactoryEntry/Query', express.static(path.join(__dirname, 'src/FactoryEntry/view/query')));
 app.use('/FactoryEntry/Log', express.static(path.join(__dirname, 'src/FactoryEntry/view/log')));
 app.use('/FactoryEntry/assets', express.static(path.join(__dirname, 'src/FactoryEntry/view')));
+app.use('/FactoryEntry/Builder', express.static(path.join(__dirname, 'src/FactoryEntry/view/builder')));
 
 // --- 路由注册 (按大类挂载) ---
 
@@ -27,6 +28,7 @@ app.use('/FactoryEntry/Report', require('./src/FactoryEntry/routes/FactoryEntryR
 app.use('/FactoryEntry/Query', require('./src/FactoryEntry/routes/VisitorApprovalQuery'));   // 访客查询
 app.use('/FactoryEntry/Construction', require('./src/FactoryEntry/routes/WeChatAutoReq'));   // 施工报备文字
 app.use('/FactoryEntry/Log', require('./src/FactoryEntry/routes/LogViewer'));                // 访客入厂日志
+app.use('/FactoryEntry/Builder', require('./src/FactoryEntry/routes/PersonConfigBuilder'));   // 人员配置生成器
 
 // 转链大类
 app.use('/YunZhongKe', require('./src/YunZhongKe/routes/YunZhongKe'));   // 云中客转链

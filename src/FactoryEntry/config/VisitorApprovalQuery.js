@@ -30,7 +30,7 @@ const CONFIGS = {
                 "NDEwMjI0MjAwNDExMDUyMzEw",  //梁蕴
                 "MzMwNDgyMTk5MzA3MDUyNDMy",  //殷光耀
                 "MzMwNDgyMTk5NDA0MTcyNzE5",  //李超
-                
+                "MTMwMzIzMTk5MDAzMDc2NDE2", // 张江宽
         ],
         regPerson: "17614625112",
         acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F"
