@@ -31,6 +31,8 @@ const CONFIGS = {
                 "MzMwNDgyMTk5MzA3MDUyNDMy",  //殷光耀
                 "MzMwNDgyMTk5NDA0MTcyNzE5",  //李超
                 "MTMwMzIzMTk5MDAzMDc2NDE2", // 张江宽
+                "MTMwMzIzMTk5ODAyMjY1NjE5", // 张鹏
+                "NDEzMDI2MTk4ODEyMDUzMzUx", // 赵正华
         ],
         regPerson: "17614625112",
         acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F"
