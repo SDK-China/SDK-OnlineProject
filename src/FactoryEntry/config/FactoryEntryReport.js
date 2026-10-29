@@ -774,7 +774,7 @@ const LOC_CONFIGS = {
                 // "MTIwNDUxOTI=", //张乃文
                 // "SzEzOTMxMihBKQ==", //陈毅鸿
                 "NDMxMjIyMTk5NzEyMDUzMzEz", //向林  
-                // "NTIyNzMxMjAwMDAxMTAzNjEx", //王煊廷
+                "NTIyNzMxMjAwMDAxMTAzNjEx", //王煊廷
                 // "MTMwMzIxMjAwMjA0MTY2MjE4", //邵相辉 
                 "NDUwMjIxMTk4OTA0MDUyNDNY", //曾静 
                 // "NDIxMTgxMTk5MDAxMTc2MzFY", //余新旺 
