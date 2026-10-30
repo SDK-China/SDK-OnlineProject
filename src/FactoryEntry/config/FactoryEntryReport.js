@@ -581,7 +581,7 @@ const LOC_CONFIGS = {
                 receptionistName: "王永吉",
                 receptionDepartment: "品檢組",
                 receptionistPhone: "13323288373",
-                visitReason: "设备维护与保养",
+                visitReason: "CCD电测机台测试软件进行日常维护",
                 renewThreshold: 2,
                 renewDays: 7
             },
@@ -590,7 +590,7 @@ const LOC_CONFIGS = {
                 receptionistName: "邢海民",
                 receptionDepartment: "衝型品檢",
                 receptionistPhone: "16630522991",
-                visitReason: "设备维护与保养",
+                visitReason: "CCD电测机台测试软件进行日常维护",
                 renewThreshold: 2,
                 renewDays: 7
             },
