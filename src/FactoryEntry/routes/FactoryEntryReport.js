@@ -7,6 +7,8 @@ require('../../../lib/env');
 const { LOC_CONFIGS } = require('../config/FactoryEntryReport');
 const { submitApplication, getAllStatuses, checkSafeToRun, calculatePlan, calculatePendingPlan, resolveCustomReceptionists } = require('../service/FactoryEntryReport');
 const { decode, delay, getFormattedDate } = require('../../../lib/utils');
+// 执行上限保护（298.5 秒强制落盘，见 config/FactoryEntryAutoRenew.js）
+const AUTO_RENEW_CFG = require('../config/FactoryEntryAutoRenew');
 
 const router = express.Router();
 
@@ -23,15 +25,19 @@ const redis = new Redis({
  * @param {string} summary - 简要说明
  * @param {object} payloadData - 具体的数据包或日志详情 (会自动转成JSON)
  */
-const saveLogToRedis = async (actionType, location, summary, payloadData) => {
+// 北京时间字符串，例如 "2026-05-11_14-30-00"，方便在数据库后台直接肉眼排序
+const bjTimeStr = (ms) => new Date((ms || Date.now()) + 28800000).toISOString()
+    .replace(/T/, '_').replace(/:/g, '-').replace(/\..+/, '');
+
+const saveLogToRedis = async (actionType, location, summary, payloadData, stableKey) => {
     try {
         const nowMs = Date.now();
-        // 算出北京时间字符串，例如 "2026-05-11_14-30-00"，方便在数据库后台直接肉眼排序
-        const timeStr = new Date(nowMs + 28800000).toISOString().replace(/T/, '_').replace(/:/g, '-').replace(/\..+/, '');
+        const timeStr = bjTimeStr(nowMs);
 
         // 构造极度规整的 Key： 类型:厂区:时间_随机数
         // 例如：FactoryLog:UI生成:LiDing:2026-05-11_14-30-00_123
-        const key = `FactoryLog:${actionType}:${location || 'GLOBAL'}:${timeStr}_${Math.floor(Math.random() * 1000)}`;
+        // stableKey 传了就用它（强制落盘时多次写同一个 key，只占一条日志）
+        const key = stableKey || `FactoryLog:${actionType}:${location || 'GLOBAL'}:${timeStr}_${Math.floor(Math.random() * 1000)}`;
 
         const logRecord = {
             time: timeStr,
@@ -243,9 +249,13 @@ router.get('/auto-renew', async (req, res) => {
         'X-Accel-Buffering': 'no'
     });
 
-    // 推送 SSE 事件
+    // 推送 SSE 事件（连接可能已被客户端 / Vercel 断开，写失败不能让流程崩掉）
     const push = (event, data) => {
-        res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+        try {
+            res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+        } catch (e) {
+            // 忽略：多半是客户端已关闭连接
+        }
     };
 
     const getTs = () => `[${((Date.now() - globalStartTime) / 1000).toFixed(2)}s]`;
@@ -255,6 +265,67 @@ router.get('/auto-renew', async (req, res) => {
         logs.push(finalMsg);
         push('log', { message: finalMsg });
     };
+
+    // 生成执行报告（保持原有排版，前端 / 日志页不用改）
+    const buildReport = (note) => {
+        const costSeconds = ((Date.now() - globalStartTime) / 1000).toFixed(2);
+        let report = "📊 自动续期执行报告\n========================\n";
+        allResults.forEach((r) => {
+            const icon = r.success ? "✅" : "❌";
+            report += icon + " [" + r.loc + "] 日期: " + r.date + "\n";
+            report += "    人员: " + r.names + "\n";
+            report += "    结果: " + (r.success ? "成功 (" + r.id + ")" : "失败 (" + r.msg + ")") + "\n";
+            report += "    耗时: " + r.costSeconds + " 秒\n";
+            report += "------------------------\n";
+        });
+        if (allResults.length === 0) report += "✅ 所有厂区状态均正常，未发生实际提交操作。\n";
+        if (note) report += note + "\n";
+        report += "⏱️ 总计用时: " + costSeconds + " 秒\n========================\n";
+        report += "\n🔍 系统时间轴日志:\n" + logs.join('\n');
+        return report;
+    };
+
+    // ⏰ 执行上限保护：Vercel 到 maxDuration（300 秒）会直接杀进程，主流程来不及收尾，
+    //    更来不及写日志。所以用独立定时器到点强制落盘，不依赖主流程走到哪一步：
+    //      295.0 秒 → 先落一份保底（实测单次写 Redis 约 0.4~0.8 秒，留足余量）
+    //      298.5 秒 → 再覆盖成最新的
+    //    两次写同一个 key，日志页只会看到一条；本地默认关闭（本地没有杀进程这回事）。
+    const snapshotKey = "FactoryLog:自动续期:" + (req.query.loc || 'ALL') + ":" + bjTimeStr(globalStartTime) + "_强制落盘";
+    let earlyFlushTimer = null;
+    let flushTimer = null;
+    let flushing = false;
+    const forceFlush = async (note) => {
+        if (flushing) return; // 上一次还没写完，跳过，避免两次写并发
+        flushing = true;
+        const t0 = Date.now();
+        try {
+            log("⏰ " + note);
+            await saveLogToRedis('自动续期', req.query.loc || 'ALL', '接近执行上限，强制落盘快照', {
+                textReport: buildReport("⏰ " + note),
+                actionDetails: allResults,
+                forcedFlush: true
+            }, snapshotKey);
+            console.log("⏰ 强制落盘完成，用时 " + (Date.now() - t0) + "ms");
+        } catch (e) {
+            console.error("⏰ 强制落盘失败:", e.message);
+        } finally {
+            flushing = false;
+        }
+    };
+    if (AUTO_RENEW_CFG.EARLY_FLUSH_AT_MS > 0) {
+        earlyFlushTimer = setTimeout(() => {
+            forceFlush("已跑 " + (AUTO_RENEW_CFG.EARLY_FLUSH_AT_MS / 1000).toFixed(1) + " 秒，距 Vercel 上限（"
+                + AUTO_RENEW_CFG.MAX_DURATION_SECONDS + " 秒）还有 "
+                + (AUTO_RENEW_CFG.EARLY_FLUSH_BEFORE_MS / 1000).toFixed(0) + " 秒，先落一份保底日志");
+        }, AUTO_RENEW_CFG.EARLY_FLUSH_AT_MS);
+    }
+    if (AUTO_RENEW_CFG.FLUSH_AT_MS > 0) {
+        flushTimer = setTimeout(() => {
+            forceFlush("已跑 " + (AUTO_RENEW_CFG.FLUSH_AT_MS / 1000).toFixed(1) + " 秒，距 Vercel 上限（"
+                + AUTO_RENEW_CFG.MAX_DURATION_SECONDS + " 秒）只剩 "
+                + (AUTO_RENEW_CFG.FLUSH_BEFORE_MS / 1000).toFixed(1) + " 秒，覆盖成最新快照");
+        }, AUTO_RENEW_CFG.FLUSH_AT_MS);
+    }
 
     try {
         log("=== 🚀 开始自动续期流程 ===");
@@ -329,18 +400,10 @@ router.get('/auto-renew', async (req, res) => {
         const costSeconds = ((globalEndTime - globalStartTime) / 1000).toFixed(2);
         log(`\n=== 🏁 流程结束 (总耗时: ${costSeconds} 秒) ===`);
 
-        let report = "📊 自动续期执行报告\n========================\n";
-        allResults.forEach((r) => {
-            const icon = r.success ? "✅" : "❌";
-            report += `${icon} [${r.loc}] 日期: ${r.date}\n`;
-            report += `    人员: ${r.names}\n`;
-            report += `    结果: ${r.success ? "成功 (" + r.id + ")" : "失败 (" + r.msg + ")"}\n`;
-            report += `    耗时: ${r.costSeconds} 秒\n`;
-            report += "------------------------\n";
-        });
-        if (allResults.length === 0) report += "✅ 所有厂区状态均正常，未发生实际提交操作。\n";
-        report += `⏱️ 总计用时: ${costSeconds} 秒\n========================\n`;
-        report += "\n🔍 系统时间轴日志:\n" + logs.join('\n');
+        // 正常收尾：把强制落盘的定时器停掉，别在收尾之后再补一份快照
+        if (earlyFlushTimer) { clearTimeout(earlyFlushTimer); earlyFlushTimer = null; }
+        if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
+        const report = buildReport('');
 
         await saveLogToRedis('自动续期', locFilter || 'ALL', '后台自动巡检与续期完成', {
             textReport: report,
@@ -354,6 +417,9 @@ router.get('/auto-renew', async (req, res) => {
         console.error(err);
         push('error', { message: err.message });
         res.end();
+    } finally {
+        if (earlyFlushTimer) { clearTimeout(earlyFlushTimer); earlyFlushTimer = null; }
+        if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
     }
 });
 
