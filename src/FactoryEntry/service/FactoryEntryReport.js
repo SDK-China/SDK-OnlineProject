@@ -185,6 +185,9 @@ const resolveCustomReceptionists = (locConfig, idBase64) => {
             receptionDepartment: recInfo.receptionDepartment || customConf.receptionDepartment,
             receptionistPhone: recInfo.receptionistPhone || customConf.receptionistPhone,
             visitReason: recInfo.visitReason || customConf.visitReason,
+            // 🌟 续期规则也跟随接待人信息库（个人配置显式写了就以个人为准，可单独覆盖）
+            renewThreshold: customConf.renewThreshold !== undefined ? customConf.renewThreshold : recInfo.renewThreshold,
+            renewDays: customConf.renewDays !== undefined ? customConf.renewDays : recInfo.renewDays,
             keepNormal: customConf.keepNormal !== undefined ? customConf.keepNormal : true
         };
     });
