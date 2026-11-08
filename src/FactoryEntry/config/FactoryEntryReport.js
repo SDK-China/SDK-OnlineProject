@@ -537,8 +537,8 @@ const LOC_CONFIGS = {
                 receptionDepartment: "QA01測試組",
                 receptionistPhone: "15133557787",
                 visitReason: "设备维护与保养",
-                renewThreshold: 2, // 🎯 整个李泊绪组统一：剩 <= 2 天触发
-                renewDays: 7       // 🎯 整个李泊绪组统一：一次续 7 天
+                renewThreshold: 7, // 🎯 整个李泊绪组统一：剩 <= 2 天触发
+                renewDays: 15       // 🎯 整个李泊绪组统一：一次续 7 天
             },
             // 张凯
             "A2451885": {
