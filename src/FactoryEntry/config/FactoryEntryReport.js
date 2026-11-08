@@ -639,7 +639,7 @@ const LOC_CONFIGS = {
                 // receptionistId: "A2451885", // 张凯
                 // receptionistId: "61908845",   // 李泊绪
                 receptionistId: "61908845",   // 李泊绪（老写法依然生效）
-                receptionists: ["F7049952"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
+                // receptionists: ["F7049952"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
                 keepNormal: true
             },
             // 窦桂阳
