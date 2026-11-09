@@ -390,7 +390,7 @@ const FORM_BASE = [
     { "componentName": "SelectField", "fieldId": "selectField_lxn9o9eb", "label": "身份类型", "fieldData": { "value": "生产服务（厂商）", "text": "生产服务（厂商）" }, "options": [{ "value": "生产服务（厂商）", "text": "生产服务（厂商）" }] },
     { "componentName": "SelectField", "fieldId": "selectField_lxn9o9ed", "label": "服务性质/到访事由", "fieldData": { "value": "设备维护", "text": "设备维护" }, "options": [{ "value": "设备维护", "text": "设备维护" }] },
     { "componentName": "SelectField", "fieldId": "selectField_lxn9o9ei", "label": "到访区域", "fieldData": { "value": "进入制造现场", "text": "进入车间/管制区域" }, "options": [{ "defaultChecked": false, "syncLabelValue": false, "__sid": "item_m56iixss", "text": "进入车间/管制区域", "__sid__": "serial_m56iixsp", "value": "进入制造现场", "sid": "serial_khe7yak4","status":"active"}] },
-    { "componentName": "TextareaField", "fieldId": "textareaField_lxn9o9eg", "label": "服务/事由描述", "fieldData": { "value": "设备维护与保养" } },
+    { "componentName": "TextareaField", "fieldId": "textareaField_lxn9o9eg", "label": "服务/事由描述", "fieldData": { "value": "M6/M1电测设备维护与保养/治具维修" } },
     // {"componentName":"SelectField","fieldId":"selectField_lxn9o9em","label":"所属公司","fieldData":{"value":"VCN01135(昆山友景电路板测试有限公司)"},"options":[]},
     { "componentName": "TextField", "fieldId": "textField_lxn9o9gc", "label": "所属公司/单位名称", "fieldData": { "value": "VCN01135(昆山友景电路板测试有限公司)" } },
     { "componentName": "RadioField", "fieldId": "radioField_lzs3fswt", "label": "是否为竞商？", "fieldData": { "value": "否", "text": "否" }, "options": [{ "defaultChecked": false, "syncLabelValue": true, "__sid": "item_lzs3ftx2", "text": "否", "__sid__": "serial_lzs3ftx2", "value": "否", "sid": "serial_lzs3ftx2" }] }
@@ -536,7 +536,7 @@ const LOC_CONFIGS = {
                 receptionistName: "李泊绪",
                 receptionDepartment: "QA01測試組",
                 receptionistPhone: "15133557787",
-                visitReason: "设备维护与保养",
+                visitReason: "Gats7755/M6电测设备的维护与保养和治具维修工作",
                 renewThreshold: 7, // 🎯 整个李泊绪组统一：剩 <= 2 天触发
                 renewDays: 15       // 🎯 整个李泊绪组统一：一次续 7 天
             },
@@ -545,7 +545,7 @@ const LOC_CONFIGS = {
                 receptionistName: "张凯",
                 receptionDepartment: "QA01工程技術五課",
                 receptionistPhone: "15032303506",
-                visitReason: "设备维护与保养",
+                visitReason: "Gats7755/M6电测设备的维护与保养和治具维修工作",
                 renewThreshold: 2,
                 renewDays: 7
             },
@@ -554,7 +554,7 @@ const LOC_CONFIGS = {
                 receptionistName: "龚旭明",
                 receptionDepartment: "QA01設備五課",
                 receptionistPhone: "17703340319",
-                visitReason: "设备维护与保养",
+                visitReason: "Gats7755/M6电测设备的维护与保养和治具维修工作",
                 renewThreshold: 2,
                 renewDays: 7
             },
@@ -563,7 +563,7 @@ const LOC_CONFIGS = {
                 receptionistName: "赵海富",
                 receptionDepartment: "QA01設備五課",
                 receptionistPhone: "17643042011",
-                visitReason: "设备维护与保养",
+                visitReason: "Gats7755/M6电测设备的维护与保养和治具维修工作",
                 renewThreshold: 2,
                 renewDays: 7
             },
@@ -572,7 +572,7 @@ const LOC_CONFIGS = {
                 receptionistName: "付英丽",
                 receptionDepartment: "夾治具設計組",
                 receptionistPhone: "13333283801",
-                visitReason: "治具维修",
+                visitReason: "CCD电测机台治具的维修与保养...",
                 renewThreshold: 2,
                 renewDays: 7
             },
