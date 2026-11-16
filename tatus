@@ -1,0 +1,10 @@
+[33m870a4b1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m 15字
+[33mccd56fb[m 7→15/22222
+[33m9b81445[m fix(renew): custom receptionist rules (renewThreshold/renewDays) were never read - fallback to loc defaults
+[33m0806378[m 7→15
+[33mb31d756[m 更改免冠照
+[33mdb00813[m 开
+[33mf7b04ac[m 自动续期：接近 300s 上限时强制落盘日志（295s 保底 + 298.5s 覆盖）
+[33m50d3956[m chore: 重新触发部署（已开启 Fluid Compute，验证 maxDuration=300）
+[33m33568b3[m vercel.json: maxDuration 60 -> 300
+[33m94c0920[m 加入很多东西999
