@@ -620,7 +620,7 @@ const LOC_CONFIGS = {
                 // receptionistId: "A2319601", // 赵海富
                 // receptionistId: "A2451885", // 张凯
                 receptionistId: "61908845",   // 李泊绪
-                receptionists: ["F7086404","H0331026"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
+                receptionists: ["F7086404"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
                 
                 keepNormal: true              // 🌟 核心：设为 true，发专属单的同时保留大部队原始包！
             },
@@ -630,7 +630,7 @@ const LOC_CONFIGS = {
                 // receptionistId: "A2319601", // 赵海富
                 // receptionistId: "A2451885", // 张凯
                 receptionistId: "61908845",   // 李泊绪
-                receptionists: ["F7086404","H0331026"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
+                receptionists: ["F7086404"],  // 🌟 多开追加：再开付英丽（纯追加，不改老内容）
                 keepNormal: true
             },
             // 姜建龙
@@ -765,13 +765,13 @@ const LOC_CONFIGS = {
             // 张江宽
             "MTMwMzIzMTk5MDAzMDc2NDE2": {
                 receptionistId: "F7086404", 
-                receptionists: ["H0331026"],
+                // receptionists: ["H0331026"],
                 keepNormal: false
             }, 
             // 张鹏
             "MTMwMzIzMTk5ODAyMjY1NjE5": {
                 receptionistId: "F7086404", 
-                receptionists: ["H0331026"],
+                // receptionists: ["H0331026"],
                 keepNormal: false
             }, 
             // 张江路
