@@ -33,6 +33,9 @@ const CONFIGS = {
                 "MTMwMzIzMTk5MDAzMDc2NDE2", // 张江宽
                 "MTMwMzIzMTk5ODAyMjY1NjE5", // 张鹏
                 "NDEzMDI2MTk4ODEyMDUzMzUx", // 赵正华
+                "MTMwMzIzMTk5MjEyMTY2NDM0",  // 张江路
+                "MzAyNDE4OTA=", // 陈柏宏
+                "MDk3NTg1NDc=", // 林政纬
         ],
         regPerson: "17614625112",
         acToken: "E5EF067A42A792436902EB275DCCA379812FF4A4A8A756BE0A1659704557309F"
